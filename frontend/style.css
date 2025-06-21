@@ -25,9 +25,38 @@ body{
     border: 1px solid #DADADA;
     padding: 20px;
     display: flex;
+    justify-content: space-evenly;
+}
+
+.chat-view-nav-bar{
+    display: flex;
     justify-content: space-between;
+    align-items: center;
+}
+
+.chat-view-nav-bar i{
+    font-size: 20px;
+    color: #848484;
+}
+
+.chat-bar-nav-name-online p{
+    color: #61D580;
+}
+
+.chat-bar-nav-name-online{
+    display: block;
+}
+
+.chat-view-divider{
+    width: 100%;
+    background-color: #FFFFFF;
+    height: 1px;
+    box-sizing: border-box;
 }
 
 .chat-view{
-    background-color: #F7F7F7;
+    background-color: #DFDFDF;
+    width: 70%;
+    border-radius: 21px;
+    padding: 10px;
 }
