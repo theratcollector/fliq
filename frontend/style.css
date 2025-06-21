@@ -20,12 +20,110 @@ body{
     background-color: #64717D;
     width: 50%;
     margin: auto;
-    height: 50vh;
+    height: 50%;
     border-radius: 34px;
     border: 1px solid #DADADA;
     padding: 20px;
     display: flex;
     justify-content: space-evenly;
+}
+
+.nav{
+    display:flexbox;
+    width: 20%;
+    height: 80%;
+}
+
+.nav h1{
+    color: #FFFFFF;
+    font-weight: 200;
+    font-size: 24.15px;
+}
+
+.nav span{
+    color: #FFFFFF;
+    font-weight: 600;
+    font-size: 24.15px;
+}
+
+.chat-overview-card{
+    display: block;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    background-color: #E4E4E4;
+    border-radius: 20px;
+    padding-left: 10px;
+    padding-top: 10px;
+}
+
+.custom-search-bar{
+    width: 80%;
+    height: 20px;
+    display: flex;
+    border: 2px solid #F0F0F0;
+    background-color: #F6F6F6;
+    border-radius: 3px;
+}
+
+.custom-search-bar input{
+    width: 100%;
+    height: 100%;
+    background-color: transparent;
+    border: none;
+    font-weight: 200;
+    font-size: 16px;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.custom-search-bar input:focus{
+    outline: none;
+}
+
+.custom-search-bar i{
+    font-size: 14px;
+}
+
+.chat-switch-container{
+    width: 100%;
+    height: 20px;
+    display: flex;
+    justify-content: space-evenly;
+    background-color: #F6F6F6;
+    border: 2px solid #F0F0F0;
+    cursor: pointer;
+    border-radius: 6px;
+}
+
+.chat-switch-slider-box {
+    width: 50%;   /* halb so breit wie Container */
+    height: 100%;
+    background-color: #FFF;
+    border-radius: 6px;
+    transition: left 0.3s ease;
+    z-index: 1;
+}
+
+.chat-switch-labels {
+    display: flex;
+    width: 50%;
+    z-index: 2;
+}
+
+.chat-switch-label {
+    width: 50%;          /* genau halbieren */
+    text-align: center;  /* Text mittig im jeweiligen Bereich */
+    font-size: 16px;
+    font-weight: 200;
+    color: #828282;
+}
+
+.chat-view{
+    background-color: #DFDFDF;
+    width: 70%;
+    border-radius: 21px;
+    padding: 10px;
 }
 
 .chat-view-nav-bar{
@@ -40,7 +138,7 @@ body{
 }
 
 .chat-bar-nav-name-online p{
-    color: #61D580;
+    color: #40AA5C;
 }
 
 .chat-bar-nav-name-online{
@@ -54,9 +152,3 @@ body{
     box-sizing: border-box;
 }
 
-.chat-view{
-    background-color: #DFDFDF;
-    width: 70%;
-    border-radius: 21px;
-    padding: 10px;
-}
