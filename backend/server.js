@@ -1,6 +1,7 @@
 const express = require("express");
 const ws = require("ws");
 const Message = require("./message.model");
+require("./db");
 
 const app = express();
 const wss = WebSocket.Server({ server });
