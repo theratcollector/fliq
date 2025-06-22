@@ -15,12 +15,20 @@
         <div class="main-card">
             <div class="nav">
                 <div class="header">
-                    <h1>Good evening, <br> <span id="greeting">Gast</span></h1>
+                    <h1>Good evening,</h1>
+                    <span id="greeting"></span>
                 </div>
                 <div class="chat-overview-card">
                     <div class="custom-search-bar">
-                        <input type="text" id="search" placeholder="Search...">
+                        <input type="text" class="input" id="search" placeholder="Search...">
                         <i class="fa fa-magnifying-glass"></i>
+                    </div>
+                    <div class="search-filter-bar">
+                        <div class="labels">
+                            <p class="label">All</p>
+                            <p class="label">Spam</p>
+                        </div>
+                        <div id="selectionIndicator" class="selection-indicator" onclick="switchFilter()"></div>
                     </div>
                     <div class="chat-name-card">
                         <i class="fa fa-user"></i>
