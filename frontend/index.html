@@ -20,30 +20,36 @@
                 <div class="chat-overview-card">
                     <div class="custom-search-bar">
                         <input type="text" id="search" placeholder="Search...">
-                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <i class="fa fa-magnifying-glass"></i>
                     </div>
-                    <div class="chat-switch-container">
-                        <div class="chat-switch-labels">
-                            <div class="chat-switch-slider-box">
-                                <h4 class="chat-switch-label">All</h4>
-                            </div>
-                            
-                            <h4 class="chat-switch-label">Spam</h4>
+                    <div class="chat-name-card">
+                        <i class="fa fa-user"></i>
+                        <div class="chat-name-card-content">
+                            <h4 id="chat1-name"></h4>
+                            <p id="presence1"></p>
                         </div>
-                        
+                    </div>
+                    <div class="chat-name-card">
+                        <i class="fa fa-user"></i>
+                        <div class="chat-name-card-content">
+                            <h4 id="chat2-name"></h4>
+                            <p id="presence2"></p>
+                        </div>
                     </div>
                 </div>
             </div>
             <div class="chat-view">
                 <div class="chat-view-nav-bar">
                     <div class="left-nav-bar">
-                        <img src="placeholder profile pic.png" alt="">
-                    <div class="chat-bar-nav-name-online">
-                        <h3 id="chatUserName"></h3>
-                        <p>online</p>
+                        <i class="fa fa-user"></i>
+                        <div class="chat-bar-nav-name-online">
+                            <h3 id="chatUserName"></h3>
+                            <p>online</p>
+                        </div>
                     </div>
+                    <div class="right-nav-bar">
+                        <i class="fa fa-ellipsis-vertical" onclick="openMenu()"></i>
                     </div>
-                    <i class="fa fa-ellipsis-vertical" onclick="openMenu()"></i>
                 </div>
                 <div class="chat-view-divider"></div>
             </div>
