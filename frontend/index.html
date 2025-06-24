@@ -60,16 +60,25 @@
                     </div>
                 </div>
                 <div class="chat-view-divider"></div>
+                <div class="isWriting-indicator">
+                    <div class="columns">
+                        <div class="colums" id="c1"></div>
+                        <div class="colums" id="c2"></div>
+                        <div class="colums" id="c3"></div>
+                        <div class="colums" id="c4"></div>
+                    </div>
+                    <p class="isWriting-text"></p>
+                </div>
                 <div class="message-bar">
                     <div class="msg-bar-left">
                         <i class="fa fa-paperclip"></i>
-                        <i class="fa fa-microphone"></i>
+                        <i onclick="updateColumns()"class="fa fa-microphone"></i>
                     </div>
                     <div class="msg-bar-text">
-                        <input type="text" placeholder="Write a message...">
-                    </div>
+                        <input id="msg-input" type="text" placeholder="Write a message...">
+                    </div> 
                     <div class="msg-bar-right">
-                        <div class="send-icon" onclick="sendMsg()">
+                        <div id="input-btn" class="send-icon">
                             <i class="fa fa-paper-plane"></i>
                         </div>
                     </div>
