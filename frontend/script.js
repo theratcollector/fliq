@@ -21,6 +21,7 @@ presence2.style.color = isOnline ? "#40AA5C" : "#ACAFC0";
 
 function openMenu(){
     // open the user menu
+    alert("Open the User Menu")
 }
 
 function switchFilter(){
@@ -30,4 +31,8 @@ function switchFilter(){
     } else{
         selectionIndicator.style.left = "0";
     }
+}
+function sendMsg(){
+    // send a message
+    alert("Sende message to chat partner");
 }
