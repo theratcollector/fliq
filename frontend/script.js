@@ -1,8 +1,7 @@
 const username = "Oskar";
 const friendName = "Daniel";
-const presence = document.getElementById("presence1");
-const presence2 = document.getElementById("presence2")
-const selectionIndicator = document.getElementById("selectionIndicator")
+const presence1 = document.getElementById("pre-indic");
+const selectionIndicator = document.getElementById("selectionIndicator");
 const input = document.getElementById("msg-input");
 const inputBtn = document.getElementById("input-btn");
 const usernameText = document.getElementsByClassName("isWriting-text");
@@ -18,11 +17,8 @@ document.getElementById("chat2-name").textContent = friendName + "2";
 
 var currentFilter = true;
 
-presence.textContent = isOnline ? "Online" : "Offline";
-presence.style.color = isOnline ? "#40AA5C" : "#ACAFC0";
-
-presence2.textContent = isOnline ? "Online" : "Offline";
-presence2.style.color = isOnline ? "#40AA5C" : "#ACAFC0";
+presence1.value = isOnline ? "Online" : "Offline";
+presence1.style.color = isOnline ? "#40AA5C" : "#ACAFC0";
 
 usernameText.value = username;
 
@@ -44,6 +40,11 @@ inputBtn.addEventListener("click", function (event){
 function openMenu(){
     // open the user menu
     alert("Open the User Menu")
+}
+
+function openChat(){
+    // open the chat
+    alert("Open the Chat")
 }
 
 function switchFilter(){

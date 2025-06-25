@@ -146,7 +146,7 @@ body{
     height: 30px;
     display: flex;
     background-color: transparent;
-    justify-content: left;
+    justify-content: space-between;
     padding: 7px;
     border-radius: 10px;
     border: 1px solid #E8E8E8;
@@ -154,12 +154,31 @@ body{
     margin-bottom: 10px;
 }
 
-.chat-name-card i{
-    margin-right: 10px;
-    background-color: #F6F6F6;
-    padding: 10px;
-    border-radius: 50%;
+.chat-name-card-content{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 }
+
+.chat-name-card-text{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.chat-name-card i{
+    background-color: #F6F6F6;
+    padding: 7px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+#openChatBtn{
+    background-color: transparent;
+    border: none;
+    color: #64717D;
+}
+
 
 .chat-name-card h3{
     color: #000000;
@@ -325,6 +344,25 @@ input:focus{
     width: 10px;
     transition: height 0.5s, background-color 0.5s;
     z-index: 11;
+}
+
+@media (max-width: 768px){
+    .background{
+        width: 100%;
+        height: 100vh;
+    }
+    .main-card{
+        width: 100%;
+        height: 100%;
+        border-radius: 0;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+    }
+
+    .chat-view{
+        display: none;
+    }
 }
 
 
