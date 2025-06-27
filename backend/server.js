@@ -16,6 +16,14 @@ wss.on("connection", socket =>{
     socket.send(JSON.stringify(history));
     socket.on("message", async (msg) => {
         const parsedMsg = JSON.parse(msg);
+
+        if(!parsedMsg.sender || !parsedMsg.content || !parsedMsg.room){
+            socket.send(JSON.stringify({
+                type:"error",
+                error:"Missing sender, content or room field"
+            }))
+            return;
+        }
         
         const lastId = history.length;
         let newId = 1;
@@ -31,7 +39,8 @@ wss.on("connection", socket =>{
             sender:parsedMsg.sender,
             content:parsedMsg.content,
             timestamp:Date.now(),
-            type:parsedMsg.type
+            type:parsedMsg.type,
+            room:parsedMsg.room
         }
 
         saveMessage(newMessage);

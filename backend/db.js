@@ -8,15 +8,16 @@ db.prepare(`
     sender TEXT NOT NULL,
     content TEXT NOT NULL,
     timestamp INTEGER NOT NULL,
-    type TEXT
+    type TEXT,
+    room TEXT NOT NULL
   )
 `).run();
 
 function saveMessage(msg){
     db.prepare(`
-    INSERT INTO messages (sender, content, timestamp, type)
-    VALUES (?, ?, ?, ?)
-  `).run(msg.sender, msg.content, msg.timestamp, msg.type);
+    INSERT INTO messages (sender, content, timestamp, type, room)
+    VALUES (?, ?, ?, ?, ?)
+  `).run(msg.sender, msg.content, msg.timestamp, msg.type, msg.room);
 }
 
 function getHistory() {

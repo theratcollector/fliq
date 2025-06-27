@@ -7,5 +7,6 @@ json
     "sender":"",
     "content":"",
     "timestamp","",
-    "type":""
+    "type":"",
+    "room":""
 }
