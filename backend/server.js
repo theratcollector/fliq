@@ -1,9 +1,11 @@
 const { parse } = require("dotenv");
 const express = require("express");
 const ws = require("ws");
+const http = require("http");
 
 const app = express();
-const wss = WebSocket.Server({ server });
+const server = http.createServer(app);
+const wss = new ws.Server({ server });
 
 app.use(express.json());
 
@@ -12,14 +14,14 @@ const history = [];
 
 
 wss.on("connection", socket =>{
-    socket.send(history);
-    socket.on("Message", async (msg) => {
+    socket.send(JSON.stringify(history));
+    socket.on("message", async (msg) => {
         const parsedMsg = JSON.parse(msg);
         
         const lastId = history.length;
-        const newId = 1;
+        let newId = 1;
 
-        if(lastId=0){
+        if(lastId==0){
             newId=1
         }else{
             newId=lastId+1;
@@ -34,11 +36,17 @@ wss.on("connection", socket =>{
         }
 
         history.push(newMessage);
+        console.log(newMessage);
 
         wss.clients.forEach(client => {
-            if (client.readyState === WebSocket.OPEN) {
-                client.send(newMessage);
+            if (client.readyState === ws.OPEN) {
+                client.send(JSON.stringify(newMessage));
             }
         })
     })
+})
+
+const PORT = 3000;
+server.listen(PORT, () => {
+    console.log(`Server alive on port ${PORT}`);
 })
