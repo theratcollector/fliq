@@ -1,0 +1,11 @@
+structure of messages
+
+json
+
+{
+    "id":"",
+    "sender":"",
+    "content":"",
+    "timestamp","",
+    "type":""
+}
