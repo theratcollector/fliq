@@ -7,13 +7,12 @@ const app = express();
 const server = http.createServer(app);
 const wss = new ws.Server({ server });
 
+const {saveMessage, getHistory} = require("./db");
+
 app.use(express.json());
 
-const history = [];
-
-
-
 wss.on("connection", socket =>{
+    const history = getHistory();
     socket.send(JSON.stringify(history));
     socket.on("message", async (msg) => {
         const parsedMsg = JSON.parse(msg);
@@ -35,7 +34,7 @@ wss.on("connection", socket =>{
             type:parsedMsg.type
         }
 
-        history.push(newMessage);
+        saveMessage(newMessage);
         console.log(newMessage);
 
         wss.clients.forEach(client => {
