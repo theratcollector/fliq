@@ -162,6 +162,13 @@
     .box1 { top: 400px; left: 480px; z-index: 5; width: 160px; height: 160px;}
     .box2 { top: 100px; right: 550px; }
     .box3 { bottom: 250px; right: 520px; z-index: 5;}
+
+    .status-msg{
+        color: red;
+        font-size: 12px;
+
+        display: none;
+    }
 </style>
 <body>
     <!-- weiß noch nicht ob ich das mache
@@ -175,15 +182,17 @@
         <button class="sign-up-btn" onclick="signUp()">Sign Up</button>
     </div>
     <div class="login-card">
+        <status class="status-msg" id="statusMsg">An error occured</status>
         <h2>Login</h2>
         <div class="seperator"></div>
         <form class="login-form">
-            <input type="text" placeholder="Email">
-            <input type="password" placeholder="Password">
-            <button class="login-btn">Login</button>
+            <input type="text" placeholder="Email" id="email">
+            <input type="password" placeholder="Password" id="password">
+            <button type="button" class="login-btn" onclick="login()">Login</button>
         </form>
         <p>Forgot password? <a href="forgot-password/">Click Here</a></p>
-        <p>Don't have an account? <a href="forgot-password/">Click Here</a></p>
+        <p>Don't have an account? <a href="../register/">Click Here</a></p>
+        <p id="token-field">Access Token: <span id="token-space"></span></p>
     </div>
 </body>
 <script>
@@ -192,7 +201,59 @@
     }
 
     function signUp(){
-        window.location.href="../register/"
+        window.location.href="../register"
+    }
+    
+
+    const tokenField = document.getElementById("token-field");
+    const tokenSpace = document.getElementById("token-space");
+    const statusMsg = document.getElementById("statusMsg");
+
+    const params = new URLSearchParams(window.location.search);
+    const status = params.get("status");
+
+    if(status === "success"){
+        tokenField.style.display = "block";
+        statusMsg.style.display = "block";
+        statusMsg.inerHTML = "Successfully logged in."
+    }else if(status === "error"){
+        tokenField.style.display = "block";
+        statusMsg.style.display = "block";
+        statusMsg.inerHTML = "An error occured."
+    }
+
+    async function login(){
+        try{
+            const data = {
+                email:document.getElementById("email").value,
+                password:document.getElementById("password").value
+            }
+
+            const res = await fetch("http://localhost:3000/login", {
+                method:"POST",
+                headers:{
+                    "Content-Type":"application/json"
+                },
+                body:JSON.stringify(data)
+            });
+
+            if(!res){
+                console.log("Serverfehler");
+                window.location.href = "?status=error";
+            }
+
+            const result = res.text();
+
+            if(res){
+                const sessionToken = res.json;
+                console.log("response: "+res)
+                tokenSpace.innerHTML = sessionToken.token;
+                //window.location.href = "index.html";
+            }
+        }catch (err){
+            console.log("Error: "+err.message);
+            window.location.href = "?status=error";
+        }
     }
 </script>
 </html>

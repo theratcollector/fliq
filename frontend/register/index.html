@@ -194,6 +194,19 @@
     </div>
 </body>
 <script>
+
+    const params = new URLSearchParams(window.location.search);
+    const status = params.get("status");
+
+    if(status === "success"){
+        statusMsg.style.display = "block";
+        statusMsg.style.color = "#4CBB17";
+        statusMsg.innerHTML = "Account Successfully Created. <a href='../login'>login here</a>";
+    }else if(status === "error"){
+        statusMsg.style.display = "block";
+        statusMsg.textContent = "An error occured. Please try again later";
+    }
+
     function home(){
         window.location.href="../"
     }
@@ -210,8 +223,6 @@
             email:document.getElementById("email").value,
             password: document.getElementById("password").value
         }
-
-        console.log(data);
 
         if(!data.email || !data.password){
             console.error("Please fill in the required fields");
@@ -231,21 +242,17 @@
 
             if(!res.ok){
                 console.log("Internal Sever error.")
-                statusMsg.style.display = "block";
-                statusMsg.textContent = "An error occured. Please try again later";
+                window.location.href="?status=success"
             }
 
             const result = await res.text();
 
             if(res.ok && result == "success"){
-                statusMsg.style.display = "block";
-                statusMsg.style.color = "#4CBB17";
-                statusMsg.innerHTML = "Account Successfully Created. <a href='../login'>login here</a>";
+                window.location.href="?status=success"
             }
         }catch{
             console.error("an error occured. Error Code: 2x6dh");
-            statusMsg.style.display = "block";
-            statusMsg.textContent = "An error occured. Please try again later";
+            window.location.href="?status=error"
         }
     }
     
