@@ -62,6 +62,6 @@ function sendMsg(){
     alert("Sende message to chat partner");
 }
 
-function createMessages(){
-    msgContainer.appendChild(msgContainer);
-}
+const messageContainer = document.querySelector('.message-container');
+messageContainer.scrollTop = messageContainer.scrollHeight;
+
