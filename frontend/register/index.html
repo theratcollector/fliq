@@ -172,18 +172,17 @@
 
     <div class="header">
         <img class="logo" src="../img/fliq-logo.png" onclick="home()">
-        <button class="sign-up-btn" onclick="signUp()">Sign Up</button>
+        <button class="sign-up-btn" onclick="signUp()">Login</button>
     </div>
     <div class="login-card">
-        <h2>Login</h2>
+        <h2>Sign Up</h2>
         <div class="seperator"></div>
         <form class="login-form">
             <input type="text" placeholder="Email">
             <input type="password" placeholder="Password">
             <button class="login-btn">Login</button>
         </form>
-        <p>Forgot password? <a href="forgot-password/">Click Here</a></p>
-        <p>Don't have an account? <a href="forgot-password/">Click Here</a></p>
+        <p>Already have an account? <a href="../login/">Click Here</a></p>
     </div>
 </body>
 <script>
@@ -192,7 +191,7 @@
     }
 
     function signUp(){
-        window.location.href="../register/"
+        window.location.href="../login/"
     }
 </script>
 </html>
