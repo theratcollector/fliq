@@ -12,7 +12,6 @@ var isOnline = false;
 document.getElementById("greeting").textContent = username;
 document.getElementById("chatUserName").textContent = friendName;
 document.getElementById("chat1-name").textContent = friendName;
-document.getElementById("chat2-name").textContent = friendName + "2";
 
 
 
