@@ -116,4 +116,19 @@ function newRoomUser(user, room){
   }
 }
 
+function getRoomsByUser(username) {
+    try {
+        const rows = roomsDB.prepare(`
+            SELECT roomId FROM room_users WHERE username = ?
+        `).all(username);
+
+        // Gib die Liste der roomIds zurück
+        return rows.map(row => row.roomId);
+    } catch (err) {
+        console.error("Error in DB:", err.message);
+        return []; // Gib leeres Array zurück bei Fehler
+    }
+}
+
+
 module.exports = { saveMessage, getHistory, saveUser, findUserByusername, findRoomById, saveRoom, newRoomUser};

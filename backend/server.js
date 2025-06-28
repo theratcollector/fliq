@@ -13,6 +13,7 @@ const wss = new ws.Server({ server });
 const {saveMessage, getHistory, saveUser, findUserByusername, findRoomById, newRoomUser} = require("./db");
 const {login, verifyToken} = require("./auth");
 const { verify } = require("crypto");
+const { url } = require("inspector");
 
 app.use(express.json());
 app.use(cors());
@@ -111,8 +112,33 @@ app.post("/login", async (req, res) => {
 })
 
 wss.on("connection", socket =>{
-    const history = getHistory();
-    socket.send(JSON.stringify(history));
+    const parameters = url.parse(req.url, true);
+    const token = parameters.query.token;
+
+    let tokenData;
+    try {
+        tokenData = verifyToken(token);
+    }catch (err) {
+        return socket.send(JSON.stringify({
+            type: "error",
+            error: "Invalid token"
+        }));
+    }
+
+    const username = tokenData.decoded.username;
+    console.log(`New connection from ${username}`);
+
+    const rooms = getRoomsByUser(username);
+    if(!rooms || rooms.length === 0){
+        console.log(`No rooms found for user ${username}`);
+        socket.send(JSON.stringify({
+            type: "error",
+            error: "No rooms found for user"
+        }));
+        return;
+    }
+    socket.send(JSON.stringify({type: "rooms",rooms: rooms}));
+
     socket.on("message", async (msg) => {
         let parsedMsg
 
@@ -132,9 +158,71 @@ wss.on("connection", socket =>{
                 newMessage();
                 break;
             case "newRoom":
-                newRoomUser();
+                newRoom();
+                break;
             default:
                 socket.send(JSON.stringify({ type:"error", error:"Unknown message type"}));
+        }
+
+        function newRoom(parsedMsg, socket, wss) {
+            const { token, addedChat } = parsedMsg;
+
+            if (!token) {
+                return socket.send(JSON.stringify({
+                    type: "error",
+                    error: "No token provided"
+                }));
+            }
+
+            let tokenData;
+            try {
+                tokenData = verifyToken(token);
+            } catch (err) {
+                return socket.send(JSON.stringify({
+                    type: "error",
+                    error: "Invalid token"
+                }));
+            }
+
+            const username = tokenData?.decoded?.username;
+            if (!username || !addedChat) {
+                return socket.send(JSON.stringify({
+                    type: "error",
+                    error: "Missing username or addedChat"
+                }));
+            }
+
+            const newRoom = {
+                roomId: generateNewRoomId(),
+                roomName: addedChat,
+                createdAt: Date.now()
+            };
+
+            try {
+                saveRoom(newRoom);
+                newRoomUser(username, newRoom.roomId);
+                newRoomUser(addedChat, newRoom.roomId); // ← Achtung: `addedChat` ist hier der andere Username?
+
+                // Broadcast an alle Clients
+                const message = {
+                    type: "newRoom",
+                    room: newRoom,
+                    users: [username, addedChat]
+                };
+
+                wss.clients.forEach(client => {
+                    if (client.readyState === ws.OPEN) {
+                        client.send(JSON.stringify(message));
+                    }
+                });
+
+            } catch (err) {
+                console.log("Error creating the room:", err);
+                socket.send(JSON.stringify({
+                    type: "error",
+                    error: "Room creation failed"
+                }));
+            }
         }
 
         function newMessage(){

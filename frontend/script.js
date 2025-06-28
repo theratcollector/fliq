@@ -85,3 +85,5 @@ function sendMsg(){
 const messageContainer = document.querySelector('.message-container');
 messageContainer.scrollTop = messageContainer.scrollHeight;
 
+
+const socket = new WebSocket("ws://localhost:3000?token=" + localStorage.getItem("token"));
