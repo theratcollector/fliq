@@ -52,10 +52,12 @@ app.post("/login", async (req, res) => {
     const password = req.body.password;
 
     try{
-        const token = login(email, password);
-        res.json({token})
+        const token = await login(email, password);
+        res.json({token});
+        console.log("success! sent out token: "+token);
     }catch(err){
         res.status(401).json({error:err.message});
+        console.log("error: "+err.message);
     }
 })
 
