@@ -10,7 +10,7 @@ const app = express();
 const server = http.createServer(app);
 const wss = new ws.Server({ server });
 
-const {saveMessage, getHistory, saveUser, findUserByusername, findRoomById} = require("./db");
+const {saveMessage, getHistory, saveUser, findUserByusername, findRoomById, newRoomUser} = require("./db");
 const {login, verifyToken} = require("./auth");
 const { verify } = require("crypto");
 
@@ -61,10 +61,19 @@ app.post("/createChat", async (req, res) => {
 
     const newRoom = {
         roomId:generateNewRoomId,
-        participants:JSON.stringify([tokenData.username, req.body.addedChat])
-
+        roomName:req.body.addedChat,
+        createdAt:Date.now()
     }
 
+    try{
+        saveRoom(newRoom);
+        newRoomUser(tokenData.decoded.username,newRoom.roomId)
+        newRoomUser(req.body.addedChat,newRoom.roomId)
+        res.status(200);
+    }catch{
+        console.log("error creating the room");
+        res.status(500);
+    }
 })
 
 app.post("/login", async (req, res) => {

@@ -36,9 +36,16 @@ usersDB.prepare(`
       CREATE TABLE IF NOT EXISTS rooms(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         roomId TEXT NOT NULL,
-        participants TEXT NOT NULL,
         roomName TEXT NOT NULL,
         createdAt INTEGER NOT NULL
+      );
+    `).run();
+
+  roomsDB.prepare(`
+      CREATE TABLE IF NOT EXISTS room_users(
+        roomId TEXT NOT NULL,
+        username TEXT NOT NULL,
+        PRIMARY KEY (roomId, username)
       );
     `).run();
 
@@ -85,9 +92,9 @@ function findRoomById(id){
 function saveRoom(room){
   try{
     roomsDB.prepare(`
-        INSERT INTO rooms (roomId, participants, roomName, createdAt)
-        VALUES (?, ?, ?, ?)   
-      `).run(room.roomId, room.participants, room.roomName, room.createdAt);
+        INSERT INTO rooms (roomId, roomName, createdAt)
+        VALUES (?, ?, ?)   
+      `).run(room.roomId, room.roomName, room.createdAt);
 
       return 200;
   }catch (err){
@@ -96,4 +103,17 @@ function saveRoom(room){
   }
 }
 
-module.exports = { saveMessage, getHistory, saveUser, findUserByusername, findRoomById};
+function newRoomUser(user, room){
+  try{
+    roomsDB.prepare(`
+        INSERT INTO room_users  (roomId, username)
+        VALUES (?, ?)
+      `).run(room, user);
+      return(200);
+  }catch(err){
+    console.log("error in db: "+err.message);
+    return(500)
+  }
+}
+
+module.exports = { saveMessage, getHistory, saveUser, findUserByusername, findRoomById, saveRoom, newRoomUser};
