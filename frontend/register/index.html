@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - FLiq</title>
+    <title>Sign Up - fliq</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
     <link href="https://use.fontawesome.com/releases/v6.6.0/css/all.css" rel="stylesheet">
 </head>
@@ -162,6 +162,13 @@
     .box1 { top: 400px; left: 480px; z-index: 5; width: 160px; height: 160px;}
     .box2 { top: 100px; right: 550px; }
     .box3 { bottom: 250px; right: 520px; z-index: 5;}
+
+    .status-msg{
+        color: red;
+        font-size: 12px;
+
+        display: none;
+    }
 </style>
 <body>
     <!-- weiß noch nicht ob ich das mache
@@ -175,12 +182,13 @@
         <button class="sign-up-btn" onclick="signUp()">Login</button>
     </div>
     <div class="login-card">
+        <status class="status-msg" id="statusMsg">An error occured</status>
         <h2>Sign Up</h2>
         <div class="seperator"></div>
         <form class="login-form">
-            <input type="text" placeholder="Email">
-            <input type="password" placeholder="Password">
-            <button class="login-btn">Login</button>
+            <input type="text" placeholder="Email" id="email">
+            <input type="password" placeholder="Password" id="password">
+            <button type="button" class="login-btn" onclick="register()">Register</button>
         </form>
         <p>Already have an account? <a href="../login/">Click Here</a></p>
     </div>
@@ -193,5 +201,53 @@
     function signUp(){
         window.location.href="../login/"
     }
+
+    async function register(){
+
+        const statusMsg = document.getElementById("statusMsg");
+        
+        const data = {
+            email:document.getElementById("email").value,
+            password: document.getElementById("password").value
+        }
+
+        console.log(data);
+
+        if(!data.email || !data.password){
+            console.error("Please fill in the required fields");
+            statusMsg.style.display = "block";
+            statusMsg.textContent = "Please fill in mandatory fields";
+            return;
+        }
+
+        try{
+            const res = await fetch("http://localhost:3000/register", {
+                method:"POST",
+                headers: {
+                    "Content-Type":"application/json"
+                },
+                body:JSON.stringify(data)
+            });
+
+            if(!res.ok){
+                console.log("Internal Sever error.")
+                statusMsg.style.display = "block";
+                statusMsg.textContent = "An error occured. Please try again later";
+            }
+
+            const result = await res.text();
+
+            if(res.ok && result == "success"){
+                statusMsg.style.display = "block";
+                statusMsg.style.color = "#4CBB17";
+                statusMsg.innerHTML = "Account Successfully Created. <a href='../login'>login here</a>";
+            }
+        }catch{
+            console.error("an error occured. Error Code: 2x6dh");
+            statusMsg.style.display = "block";
+            statusMsg.textContent = "An error occured. Please try again later";
+        }
+    }
+    
 </script>
 </html>
