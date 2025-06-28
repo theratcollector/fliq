@@ -9,7 +9,7 @@ const app = express();
 const server = http.createServer(app);
 const wss = new ws.Server({ server });
 
-const {saveMessage, getHistory} = require("./db");
+const {saveMessage, getHistory, saveUser, findUserByEmail} = require("./db");
 
 app.use(express.json());
 app.use(cors());
@@ -20,28 +20,19 @@ app.post("/register", async (req, res) =>{
     console.log("received request");
     const data = req.body;
 
-    const lastId = users.length;
-    let newId = 1;
-
-    if(lastId==0){
-        newId=1
-    }else{
-        newId=lastId+1;
-    }
-
     try{
         if(data.email || data.password){
             const hashedPW = await bcrypt.hash(data.password, 10)
             const newUser = {
-                id:newId,
+                //id set later
                 email:data.email,
                 password:hashedPW,
-                rooms:"",
+                rooms: JSON.stringify([]),
                 role:"user",
                 createdAt:Date.now()
             }
 
-            users.push(newUser);
+            saveUser(newUser);
             console.log(`successfully created user ${newUser.email} with password ${newUser.password}, id ${newUser.id} created at ${newUser.createdAt}`);
             res.status(200).send("success");
         }else{
