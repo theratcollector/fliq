@@ -1,0 +1,73 @@
+Du bist schon **ziemlich nah dran**, aber das Scrollverhalten in deinem aktuellen Setup funktioniert möglicherweise **nicht wie gewünscht**, weil:
+
+1. Der Container `.message-container` hat zwar `overflow-y: auto`, aber die **Höhe ist relativ (70%)**, was **nicht zuverlässig** genug ist, wenn du sicherstellen willst, dass man dort immer scrollen kann.
+2. Die **eltern-Elemente** wie `.chat-view` oder `.main-card` blockieren ggf. das Scrollen, wenn deren eigene Höhe oder Overflow nicht korrekt gesetzt ist.
+3. Die `position: absolute`-Elemente wie `.message-bar` und `.isWriting-indicator` **könnten die Höhe der message-container ungewollt einschränken**.
+
+---
+
+### ✅ **Ziel:** Chat-Fenster, in dem man die Nachrichten scrollen kann, unabhängig von Eingabefeld oder Indikator
+
+---
+
+### 🔧 Lösungsschritte:
+
+#### 1. Mache `.chat-view` zu einem flex-container mit fixierter Höhe (am besten `100%`) und lasse den `message-container` den gesamten **verbleibenden Platz** nutzen:
+
+```css
+.chat-view {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #F4F4F432;
+  border: 1px solid #DFDFDF;
+  width: 73%;
+  height: 100%;
+  border-radius: 21px;
+  overflow: hidden; /* <- Verhindert, dass inneres Scrollen überlappt */
+}
+```
+
+#### 2. Verwende für `.message-container` **`flex-grow: 1`**, damit es den Platz zwischen der Top-Navigation und dem Eingabefeld füllt:
+
+```css
+.message-container {
+  display: flex;
+  flex-direction: column;
+  scroll-behavior: smooth;
+  overflow-y: auto;
+  justify-content: flex-end;
+  width: 100%;
+  flex-grow: 1; /* Statt height: 70% */
+  padding: 10px 0; /* Platz, damit Nachrichten nicht unter der message-bar verschwinden */
+}
+```
+
+#### 3. Optional: Stelle sicher, dass `.chat-view` einen fixen `max-height` hat, wenn du absolute Elemente wie `.message-bar` verwenden willst — oder **mach `message-bar` relativ/flexibel**.
+
+---
+
+### 🧪 Test: Scroll funktioniert dann, wenn du z. B. 20 Nachrichten simulierst.
+
+---
+
+### Bonus: Wenn du willst, dass beim Öffnen automatisch nach unten gescrollt wird:
+
+```js
+msgContainer.scrollTop = msgContainer.scrollHeight;
+```
+
+Einbauen z. B. in `sendMsg()` oder `createMessages()`.
+
+---
+
+### Fazit
+
+🚀 **Ja**, dein HTML ist im Prinzip korrekt, aber CSS braucht ein paar gezielte Fixes. Das Scrollen funktioniert **nur zuverlässig**, wenn:
+
+* Der **Container (message-container)** die **volle Höhe nutzen darf** (`flex-grow`).
+* Die Eltern-Elemente das zulassen (keine überlappenden `absolute` Elemente).
+* `overflow-y: auto` am richtigen Ort ist – was du gemacht hast, ist richtig.
+
+Wenn du willst, kann ich dir den konkreten Fix als CSS-Diff liefern.
