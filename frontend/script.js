@@ -43,7 +43,7 @@ function openMenu(){
     alert("Open the User Menu")
 }
 
-function openChat(){
+function openRoom(){
     // open the chat
     alert("Open the Chat")
 }

@@ -76,6 +76,25 @@ app.post("/createChat", async (req, res) => {
     }
 })
 
+app.post("/checkLogin", async (req, res)=>{
+    const authHeader = req.headers.authorization;
+    if(!authHeader || !authHeader.startsWith("Bearer ")){
+        return res.status(401).json({error: "No Token received"});
+    }
+
+    const token = authHeader.split(" ")[1];
+
+    try{
+        const tokenData = verifyToken(token);
+        if(tokenData.valid){
+            res.json({valid:true, username:tokenData.decoded.username});
+        }
+    }catch(err){
+        console.log("error verifying token: "+err.message);
+        res.status(401).json({valid:false, error:err.message});
+    }
+})
+
 app.post("/login", async (req, res) => {
     console.log("login request received");
     const username = req.body.username;

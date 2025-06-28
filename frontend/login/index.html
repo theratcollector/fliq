@@ -192,7 +192,6 @@
         </form>
         <p>Forgot password? <a href="forgot-password/">Click Here</a></p>
         <p>Don't have an account? <a href="../register/">Click Here</a></p>
-        <p id="token-field">Access Token: <span id="token-space"></span></p>
     </div>
 </body>
 <script>
@@ -204,9 +203,6 @@
         window.location.href="../register"
     }
     
-
-    const tokenField = document.getElementById("token-field");
-    const tokenSpace = document.getElementById("token-space");
     const statusMsg = document.getElementById("statusMsg");
 
     const params = new URLSearchParams(window.location.search);
@@ -245,13 +241,36 @@
             const result = await res.json();
 
             if(result.token){
-                tokenSpace.innerHTML = result.token;
-                //window.location.href = "index.html";
+                localStorage.setItem("token", result.token);
+                window.location.href = "../index.html";
             }
         }catch (err){
             console.log("Error: "+err.message);
             window.location.href = "?status=error";
         }
     }
+</script>
+<script>
+    async function checkLogin() {
+        const token = localStorage.getItem("token");
+
+        if (token) {
+            const res = await fetch("http://localhost:3000/checkLogin", {
+                method: "POST",
+                headers: {
+                    Authorization: "Bearer " + token
+                }
+            });
+
+            const data = await res.json();
+
+
+            if (data.valid) {
+                window.location.href = "../";
+            }
+        }
+    }
+
+    checkLogin();
 </script>
 </html>
