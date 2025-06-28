@@ -46,8 +46,6 @@ body{
     width: 73%;
     height: 100%;
     border-radius: 21px;
-    overflow: hidden;
-    box-sizing: border-box;
 }
 
 .header{
@@ -356,10 +354,16 @@ input:focus{
 .message-container{
     display: flex;
     flex-direction: column;
-    overflow-y: auto;
     justify-content: flex-end;
     width: 100%;
-    height: 100%;
+    flex: 1;
+    overflow: auto;
+}
+
+.messages{
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
 }
 
 .self-send-msg{
