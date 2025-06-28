@@ -19,11 +19,11 @@ db.prepare(`
 
 db.prepare(`
     CREATE TABLE IF NOT EXISTS  users (
-      id INTEGER PRIMARY KEY AUTOINCREMENT
-      email TEXT UNIQUE NOT NULL
-      password TEXT NOT NULL
-      rooms TEXT
-      role TEXT DEFAULT 'user'
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      email TEXT UNIQUE NOT NULL,
+      password TEXT NOT NULL,
+      rooms TEXT,
+      role TEXT DEFAULT 'user',
       createdAt INTEGER NOT NULL
     )
   `).run();
@@ -46,7 +46,7 @@ function getHistory() {
 
 function saveUser(user){
   db.prepare(`
-      INSERT INTO users (email, password, rooms, role || 'user', createdAt)
+      INSERT INTO users (email, password, rooms, role, createdAt)
       VALUES (?, ?, ?, ?, ?)   
     `).run(user.email, user.password, user.rooms, user.role, user.createdAt);
 }

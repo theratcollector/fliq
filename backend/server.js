@@ -21,7 +21,7 @@ app.post("/register", async (req, res) =>{
     const data = req.body;
 
     try{
-        if(data.email || data.password){
+        if(data.email && data.password){
             const hashedPW = await bcrypt.hash(data.password, 10)
             const newUser = {
                 //id set later
@@ -31,6 +31,8 @@ app.post("/register", async (req, res) =>{
                 role:"user",
                 createdAt:Date.now()
             }
+
+            console.log(newUser);
 
             saveUser(newUser);
             console.log(`successfully created user ${newUser.email} with password ${newUser.password}, id ${newUser.id} created at ${newUser.createdAt}`);
