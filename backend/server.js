@@ -45,6 +45,11 @@ app.post("/register", async (req, res) =>{
     }
 })
 
+app.post("/login", async (req, res) => {
+    console.log("login request received");
+    
+})
+
 wss.on("connection", socket =>{
     const history = getHistory();
     socket.send(JSON.stringify(history));
