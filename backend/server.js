@@ -10,6 +10,7 @@ const server = http.createServer(app);
 const wss = new ws.Server({ server });
 
 const {saveMessage, getHistory, saveUser, findUserByEmail} = require("./db");
+const {login, verifyToken} = require("./auth");
 
 app.use(express.json());
 app.use(cors());
@@ -47,7 +48,15 @@ app.post("/register", async (req, res) =>{
 
 app.post("/login", async (req, res) => {
     console.log("login request received");
-    
+    const email = req.body.email;
+    const password = req.body.password;
+
+    try{
+        const token = login(email, password);
+        res.json({token})
+    }catch(err){
+        res.status(401).json({error:err.message});
+    }
 })
 
 wss.on("connection", socket =>{
