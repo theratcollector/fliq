@@ -186,7 +186,7 @@
         <h2>Sign Up</h2>
         <div class="seperator"></div>
         <form class="login-form">
-            <input type="text" placeholder="Email" id="email">
+            <input type="text" placeholder="username" id="username">
             <input type="password" placeholder="Password" id="password">
             <button type="button" class="login-btn" onclick="register()">Register</button>
         </form>
@@ -220,11 +220,11 @@
         const statusMsg = document.getElementById("statusMsg");
         
         const data = {
-            email:document.getElementById("email").value,
+            username:document.getElementById("username").value,
             password: document.getElementById("password").value
         }
 
-        if(!data.email || !data.password){
+        if(!data.username || !data.password){
             console.error("Please fill in the required fields");
             statusMsg.style.display = "block";
             statusMsg.textContent = "Please fill in mandatory fields";

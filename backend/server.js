@@ -4,13 +4,15 @@ const ws = require("ws");
 const http = require("http");
 const bcrypt = require("bcrypt");
 const cors = require("cors");
+const crypto = require("crypto");
 
 const app = express();
 const server = http.createServer(app);
 const wss = new ws.Server({ server });
 
-const {saveMessage, getHistory, saveUser, findUserByEmail} = require("./db");
+const {saveMessage, getHistory, saveUser, findUserByusername, findRoomById} = require("./db");
 const {login, verifyToken} = require("./auth");
+const { verify } = require("crypto");
 
 app.use(express.json());
 app.use(cors());
@@ -22,11 +24,11 @@ app.post("/register", async (req, res) =>{
     const data = req.body;
 
     try{
-        if(data.email && data.password){
+        if(data.username && data.password){
             const hashedPW = await bcrypt.hash(data.password, 10)
             const newUser = {
                 //id set later
-                email:data.email,
+                username:data.username,
                 password:hashedPW,
                 rooms: JSON.stringify([]),
                 role:"user",
@@ -36,7 +38,7 @@ app.post("/register", async (req, res) =>{
             console.log(newUser);
 
             saveUser(newUser);
-            console.log(`successfully created user ${newUser.email} with password ${newUser.password}, id ${newUser.id} created at ${newUser.createdAt}`);
+            console.log(`successfully created user ${newUser.username} with password ${newUser.password}, id ${newUser.id} created at ${newUser.createdAt}`);
             res.status(200).send("success");
         }else{
             res.send("missing username or password");
@@ -46,13 +48,32 @@ app.post("/register", async (req, res) =>{
     }
 })
 
+app.post("/createChat", async (req, res) => {
+    console.log("room creation request received");
+
+    const authHeader = req.headers.authorization;
+    if(!authHeader || !authHeader.startsWith("Bearer ")){
+        return res.status(401).json({error: "No Token received"});
+    }
+
+    const token = authHeader.split(" ")[1];
+    const tokenData = verifyToken(token);
+
+    const newRoom = {
+        roomId:generateNewRoomId,
+        participants:JSON.stringify([tokenData.username, req.body.addedChat])
+
+    }
+
+})
+
 app.post("/login", async (req, res) => {
     console.log("login request received");
-    const email = req.body.email;
+    const username = req.body.username;
     const password = req.body.password;
 
     try{
-        const token = await login(email, password);
+        const token = await login(username, password);
         res.json({token});
         console.log("success! sent out token: "+token);
     }catch(err){
@@ -108,3 +129,16 @@ const PORT = 3000;
 server.listen(PORT, () => {
     console.log(`Server alive on port ${PORT}`);
 })
+
+
+function generateNewRoomId(){
+    let exsists = true
+    let id;
+
+    while(exists){
+        id = crypto.randomBytes(24).toString("hex");
+        exists = findRoomById(id);
+    }
+    console.log("generated unique roomid: "+id);
+    
+}

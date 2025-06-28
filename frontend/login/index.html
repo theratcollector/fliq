@@ -186,7 +186,7 @@
         <h2>Login</h2>
         <div class="seperator"></div>
         <form class="login-form">
-            <input type="text" placeholder="Email" id="email">
+            <input type="text" placeholder="username" id="username">
             <input type="password" placeholder="Password" id="password">
             <button type="button" class="login-btn" onclick="login()">Login</button>
         </form>
@@ -225,7 +225,7 @@
     async function login(){
         try{
             const data = {
-                email:document.getElementById("email").value,
+                username:document.getElementById("username").value,
                 password:document.getElementById("password").value
             }
 
@@ -242,12 +242,10 @@
                 window.location.href = "?status=error";
             }
 
-            const result = res.text();
+            const result = await res.json();
 
-            if(res){
-                const sessionToken = res.json;
-                console.log("response: "+res)
-                tokenSpace.innerHTML = sessionToken.token;
+            if(result.token){
+                tokenSpace.innerHTML = result.token;
                 //window.location.href = "index.html";
             }
         }catch (err){

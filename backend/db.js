@@ -1,7 +1,8 @@
 const Database = require("better-sqlite3");
 
-const messagesDB = new Database("messages.db");
-const usersDB = new Database("users.db");
+const messagesDB = new Database("db/messages.db");
+const usersDB = new Database("db/users.db");
+const roomsDB = new Database("db/rooms.db");
 
 //messages db
 
@@ -21,13 +22,25 @@ messagesDB.prepare(`
 usersDB.prepare(`
     CREATE TABLE IF NOT EXISTS  users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      email TEXT UNIQUE NOT NULL,
+      username TEXT UNIQUE NOT NULL,
       password TEXT NOT NULL,
       rooms TEXT,
       role TEXT DEFAULT 'user',
       createdAt INTEGER NOT NULL
     )
   `).run();
+
+  //rooms db
+
+  roomsDB.prepare(`
+      CREATE TABLE IF NOT EXISTS rooms(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        roomId TEXT NOT NULL,
+        participants TEXT NOT NULL,
+        roomName TEXT NOT NULL,
+        createdAt INTEGER NOT NULL
+      );
+    `).run();
 
 
 //messages functions
@@ -48,9 +61,9 @@ function getHistory() {
 function saveUser(user){
   try{
     usersDB.prepare(`
-        INSERT INTO users (email, password, rooms, role, createdAt)
+        INSERT INTO users (username, password, rooms, role, createdAt)
         VALUES (?, ?, ?, ?, ?)   
-      `).run(user.email, user.password, user.rooms, user.role, user.createdAt);
+      `).run(user.username, user.password, user.rooms, user.role, user.createdAt);
 
       return 200;
   }catch (err){
@@ -59,8 +72,28 @@ function saveUser(user){
   }
 }
 
-function findUserByEmail(email){
-  return usersDB.prepare(`SELECT * FROM users WHERE email = ?`).get(email);
+function findUserByusername(username){
+  return usersDB.prepare(`SELECT * FROM users WHERE username = ?`).get(username);
 }
 
-module.exports = { saveMessage, getHistory, saveUser, findUserByEmail};
+//rooms functions
+
+function findRoomById(id){
+  return roomsDB.prepare(`SELECT id FROM rooms WHERE id = ?`).get(id);
+}
+
+function saveRoom(room){
+  try{
+    roomsDB.prepare(`
+        INSERT INTO rooms (roomId, participants, roomName, createdAt)
+        VALUES (?, ?, ?, ?)   
+      `).run(room.roomId, room.participants, room.roomName, room.createdAt);
+
+      return 200;
+  }catch (err){
+    console.log("error: "+err.message);
+    return 500;
+  }
+}
+
+module.exports = { saveMessage, getHistory, saveUser, findUserByusername, findRoomById};

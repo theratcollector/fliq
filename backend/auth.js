@@ -2,17 +2,17 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 require("dotenv").config();
 
-const {saveMessage, getHistory, saveUser, findUserByEmail} = require("./db");
+const {saveMessage, getHistory, saveUser, findUserByusername} = require("./db");
 
 
-async function login(email, password) {
-    const user = findUserByEmail(email);
+async function login(username, password) {
+    const user = findUserByusername(username);
     if(!user || !bcrypt.compareSync(password, user.password)){
         console.log("no user found, or other error");
         throw new Error("Invalid Login");
     }
 
-    const token = jwt.sign({id:user.id, email: user.email}, process.env.JWT_SECRET, {expiresIn:"96h"});
+    const token = jwt.sign({id:user.id, username: user.username}, process.env.JWT_SECRET, {expiresIn:"96h"});
     return token;
 }
 
