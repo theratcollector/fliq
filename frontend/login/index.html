@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - FLiq</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+    <link href="https://use.fontawesome.com/releases/v6.6.0/css/all.css" rel="stylesheet">
+</head>
+<style>
+    body{
+        height: 100vh;
+        width: 100%;
+        margin: 0;
+
+        font-family: inter;
+
+        background: linear-gradient(to bottom, #A5BCCF, #7F87A9);
+
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .header{
+        position: absolute;
+        width: 100vw;
+        display: flex;
+        justify-content: space-between;
+        top: 0px;
+    }
+
+    .logo{
+        margin: 30px;
+        height: 70px;
+        width: auto;
+
+        box-shadow: 0px, 4px, 4px, 0px, rgba(0, 0, 0, 0.25);
+
+        cursor: pointer;
+    }
+
+    .sign-up-btn{
+        margin: 30px;
+        width: 40%;
+
+        max-width: 200px;
+        height: 50px;
+        border-radius: 15px;
+        border: solid, 1px, #d3d3d3c4;
+
+        background-color: rgba(217,217,217,0.32);
+        backdrop-filter: blur(15);
+        color: white;
+        font-size: 20px;
+    }
+
+    .login-card{
+        width: 95%;
+        max-width: 600px;
+        padding: 50px;
+        border-radius: 30px;
+        border-color: #ccccccb2;
+        border-width: 1px;
+        border-style: solid;
+
+        background-color: #d9d9d950;
+        backdrop-filter: blur(15px);
+    }
+
+    .login-card h2{
+        color: white;
+        font-size: 45px;
+        font-weight: 400;
+    }
+
+    .seperator{
+        height: 2px;
+        width: 90px;
+        background-color: white;
+    }
+
+    .login-card input{
+        height: 50px;
+        width: 95%;
+        max-width: 550px;
+        border-radius: 30px;
+        background-color: #fafafa77;
+        border: solid, 1px, #d3d3d3c4;
+        
+        box-shadow: inset 0px 11px 15px 0px rgba(255, 255, 255, 0.25);
+        backdrop-filter: blur(15);
+        margin-bottom: 30px;
+        padding-left: 30px;
+
+        font-size: 20px;
+
+        color: rgba(255, 255, 255, 1);
+    }
+
+    input::placeholder{
+        color:rgba(255, 255, 255, 0.836);
+    }
+
+    .login-card button{
+        height: 60px;
+        width: 100%;
+        max-width: 160px;
+        border-radius: 34px;
+        background-color: rgba(250, 250, 250, 0.79);
+        border: solid, 1px, #d3d3d3c4;
+        
+        box-shadow: inset 0px 11px 15px 0px rgba(255, 255, 255, 0.25);
+        backdrop-filter: blur(15);
+        margin-bottom: 30px;
+
+        font-size: 20px;
+        color: rgba(0, 0, 0, 0.75);
+    }
+
+    button{
+        transition: 0.3s ease-in-out;
+    }
+    button:hover{
+        transform: scale(1.04);
+    }
+
+    .login-form{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: left;
+
+    }
+
+    p{
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 17px;
+    }
+
+    a{
+        color: rgba(255, 255, 255, 0.7);
+    }
+</style>
+<body>
+    <div class="floating-box box1"></div>
+    <div class="floating-box box2"></div>
+    <div class="floating-box box3"></div>
+    <div class="floating-box box4"></div>
+
+    <div class="header">
+        <img class="logo" src="../img/fliq-logo.png" onclick="home()">
+        <button class="sign-up-btn">Sign Up</button>
+    </div>
+    <div class="login-card">
+        <h2>Login</h2>
+        <div class="seperator"></div>
+        <form class="login-form">
+            <input type="text" placeholder="Email">
+            <input type="password" placeholder="Password">
+            <button class="login-btn">Login</button>
+        </form>
+        <p>Forgot password? <a href="forgot-password/">Click Here</a></p>
+        <p>Don't have an account? <a href="forgot-password/">Click Here</a></p>
+    </div>
+</body>
+<script>
+    function home(){
+        window.location.href="../"
+    }
+</script>
+</html>
