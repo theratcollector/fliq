@@ -3,6 +3,7 @@ const express = require("express");
 const ws = require("ws");
 const http = require("http");
 const bcrypt = require("bcrypt");
+const cors = require("cors");
 
 const app = express();
 const server = http.createServer(app);
@@ -11,12 +12,13 @@ const wss = new ws.Server({ server });
 const {saveMessage, getHistory} = require("./db");
 
 app.use(express.json());
+app.use(cors());
 
 const users = [];
 
-app.post("/register", (req, res) =>{
+app.post("/register", async (req, res) =>{
     console.log("received request");
-    const data = JSON.parse(req);
+    const data = req.body;
 
     const lastId = users.length;
     let newId = 1;
@@ -28,8 +30,8 @@ app.post("/register", (req, res) =>{
     }
 
     try{
-        if(!data.email || !data.password){
-            const hashedPW = bcrypt.hash(data.password, 10)
+        if(data.email || data.password){
+            const hashedPW = await bcrypt.hash(data.password, 10)
             const newUser = {
                 id:newId,
                 email:data.email,
@@ -40,24 +42,13 @@ app.post("/register", (req, res) =>{
             }
 
             users.push(newUser);
-            console.log(`successfully created user ${newUser}`);
-            res.status(200).send();
+            console.log(`successfully created user ${newUser.email} with password ${newUser.password}, id ${newUser.id} created at ${newUser.createdAt}`);
+            res.status(200).send("success");
         }else{
             res.send("missing username or password");
         }
     }catch{
         res.status(400).send();
-    }
-
-    if(!data.email || !data.password){
-
-        const newUser = {
-            id:newId,
-            email:data.email,
-
-        }
-    }else{
-        res.error("missing email or password")
     }
 })
 
