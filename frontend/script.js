@@ -5,6 +5,7 @@ const selectionIndicator = document.getElementById("selectionIndicator");
 const input = document.getElementById("msg-input");
 const inputBtn = document.getElementById("input-btn");
 const usernameText = document.getElementsByClassName("isWriting-text");
+const msgContainer = document.getElementById("msg-container");
 
 var isOnline = false;
 
@@ -29,7 +30,7 @@ input.addEventListener("keydown", function (event){
 });
 
 inputBtn.addEventListener("click", function (event){
-    if(input.value != ""){
+    if(input.value !== ""){
         sendMsg();
     }
 });
@@ -59,5 +60,8 @@ function sendMsg(){
     // send a message
     input.value = "";
     alert("Sende message to chat partner");
-    
+}
+
+function createMessages(){
+    msgContainer.appendChild(msgContainer);
 }
