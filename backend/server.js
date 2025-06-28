@@ -2,6 +2,7 @@ const { parse } = require("dotenv");
 const express = require("express");
 const ws = require("ws");
 const http = require("http");
+const bcrypt = require("bcrypt");
 
 const app = express();
 const server = http.createServer(app);
@@ -10,6 +11,55 @@ const wss = new ws.Server({ server });
 const {saveMessage, getHistory} = require("./db");
 
 app.use(express.json());
+
+const users = [];
+
+app.post("/register", (req, res) =>{
+    console.log("received request");
+    const data = JSON.parse(req);
+
+    const lastId = users.length;
+    let newId = 1;
+
+    if(lastId==0){
+        newId=1
+    }else{
+        newId=lastId+1;
+    }
+
+    try{
+        if(!data.email || !data.password){
+            const hashedPW = bcrypt.hash(data.password, 10)
+            const newUser = {
+                id:newId,
+                email:data.email,
+                password:hashedPW,
+                rooms:"",
+                role:"user",
+                createdAt:Date.now()
+            }
+
+            users.push(newUser);
+            console.log(`successfully created user ${newUser}`);
+            res.status(200).send();
+        }else{
+            res.send("missing username or password");
+        }
+    }catch{
+        res.status(400).send();
+    }
+
+    if(!data.email || !data.password){
+
+        const newUser = {
+            id:newId,
+            email:data.email,
+
+        }
+    }else{
+        res.error("missing email or password")
+    }
+})
 
 wss.on("connection", socket =>{
     const history = getHistory();
