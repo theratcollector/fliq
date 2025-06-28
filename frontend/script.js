@@ -35,6 +35,27 @@ inputBtn.addEventListener("click", function (event){
 });
 
 
+function toggleAddUserForm(){
+    const form = document.getElementById("addUserForm");
+    const chatCards = document.querySelectorAll(".chat-name-card");
+
+    const isVisible = form.style.display === "block";
+    form.style.display = isVisible ? "none" : "block";
+
+    chatCards.forEach(card => {
+        card.style.display = isVisible ? "block" : "none";
+    });
+}
+
+function submitNewUser() {
+    const username = document.getElementById("newUsername").value;
+    if (!username) return;
+
+    
+}
+
+
+
 
 
 function openMenu(){

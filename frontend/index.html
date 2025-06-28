@@ -30,6 +30,9 @@
                         </div>
                         <div id="selectionIndicator" class="selection-indicator"></div>
                     </div>
+
+                    <!-- diese Karte muss eingefügt werden wenn ein chat hizugefügt wird -->
+
                     <div class="chat-name-card">
                         <div class="chat-name-card-content">
                             <i class="fa fa-user"></i>
@@ -40,10 +43,21 @@
                         </div>
                         <i class="fa fa-chevron-right" id="openChatBtn" onclick="openRoom()"></i>
                     </div>
-                    <div class="add-user-btn">
+                    
+                    
+                    <div class="add-user-form" id="addUserForm" style="display: none;">
+                        <h4>Add new user</h4>
+                        <input type="text" id="newUsername" placeholder="Enter username...">
+                        <button onclick="submitNewUser()">Add</button>
+                    </div>
+                    
+
+                    <div class="add-user-btn" onclick="toggleAddUserForm()">
                         <i class="fa fa-plus"></i>
                         <p>Add User</p>
                     </div>
+
+
                 </div>
             </div>
             <div class="chat-view">

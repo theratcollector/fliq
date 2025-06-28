@@ -114,42 +114,56 @@ wss.on("connection", socket =>{
     const history = getHistory();
     socket.send(JSON.stringify(history));
     socket.on("message", async (msg) => {
-        const parsedMsg = JSON.parse(msg);
+        let parsedMsg
 
-        if(!parsedMsg.sender || !parsedMsg.content || !parsedMsg.room){
-            socket.send(JSON.stringify({
+        try{
+            parsedMsg = JSON.parse(msg);
+        }catch{
+            return socket.send(JSON.stringify({
                 type:"error",
-                error:"Missing sender, content or room field"
+                error:"Invalid JSON format"
             }))
-            return;
-        }
-        
-        const lastId = history.length;
-        let newId = 1;
-
-        if(lastId==0){
-            newId=1
-        }else{
-            newId=lastId+1;
         }
 
-        const newMessage = {
-            id:newId,
-            sender:parsedMsg.sender,
-            content:parsedMsg.content,
-            timestamp:Date.now(),
-            type:parsedMsg.type,
-            room:parsedMsg.room
+        const type = parsedMsg.type;
+
+        switch(type){
+            case "newMessage":
+                newMessage();
+                break;
+            case "newRoom":
+                newRoomUser();
+            default:
+                socket.send(JSON.stringify({ type:"error", error:"Unknown message type"}));
         }
 
-        saveMessage(newMessage);
-        console.log(newMessage);
-
-        wss.clients.forEach(client => {
-            if (client.readyState === ws.OPEN) {
-                client.send(JSON.stringify(newMessage));
+        function newMessage(){
+            if(!parsedMsg.sender || !parsedMsg.content || !parsedMsg.room){
+                socket.send(JSON.stringify({
+                    type:"error",
+                    error:"Missing sender, content or room field"
+                }))
+                return;
             }
-        })
+
+            const newMessage = {
+                id:newId,
+                sender:parsedMsg.sender,
+                content:parsedMsg.content,
+                timestamp:Date.now(),
+                type:parsedMsg.type,
+                room:parsedMsg.room
+            }
+
+            saveMessage(newMessage);
+            console.log(newMessage);
+
+            wss.clients.forEach(client => {
+                if (client.readyState === ws.OPEN) {
+                    client.send(JSON.stringify(newMessage));
+                }
+            })
+        }
     })
 })
 
