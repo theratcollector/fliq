@@ -199,8 +199,7 @@ function sendMsg(){
     }
 }
 
-const messageContainer = document.querySelector('.message-container');
-messageContainer.scrollTop = messageContainer.scrollHeight;
+
 
 
 function logout() {
