@@ -63,8 +63,8 @@
                     <div class="left-nav-bar">
                         <i class="fa fa-user"></i>
                         <div class="chat-bar-nav-name-online">
-                            <h3 id="chatUserName">Guest</h3>
-                            <p>online</p>
+                            <h3 id="chatUserName">Loading...</h3>
+                            <p>Loading...</p>
                         </div>
                     </div>
                     <div class="right-nav-bar">
@@ -73,7 +73,11 @@
                 </div>
                 <div class="chat-view-divider"></div>
                 <div class="message-container">
-                    <div class="messages">
+                    <div class="messages" id="messages">
+                        <div class="self-send-msg">
+                            <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
+
+                        </div>
                         <div class="self-send-msg">
                             <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
 
@@ -84,7 +88,7 @@
                         </div>
 
                         <div class="friend-send-msg">
-                            <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
+                            <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy</p>
 
                         </div>
                         <div class="placeholder-message"></div>
@@ -99,7 +103,7 @@
                         <input id="msg-input" type="text" placeholder="Write a message...">
                     </div>
                     <div class="msg-bar-right">
-                        <div id="input-btn" class="send-icon">
+                        <div id="input-btn" class="send-icon" onclick="sendMsg()">
                             <i class="fa fa-paper-plane"></i>
                         </div>
                     </div>
@@ -108,5 +112,11 @@
         </div>
     </div>
 </body>
+<script>
+    window.addEventListener("load", () => {
+        const msgContainer = document.getElementById('messages');
+        msgContainer.scrollTop = msgContainer.scrollHeight;
+    })
+</script>
 <script src="script.js"></script>
 </html>

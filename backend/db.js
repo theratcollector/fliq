@@ -56,11 +56,12 @@ function saveMessage(msg){
     messagesDB.prepare(`
     INSERT INTO messages (sender, content, timestamp, type, room)
     VALUES (?, ?, ?, ?, ?)
-  `).run(msg.sender, msg.content, msg.timestamp, msg.type, msg.room);
+  `).run(msg.sender, msg.content, msg.timestamp, msg.msgType, msg.room);
 }
 
-function getHistory() {
-  return messagesDB.prepare(`SELECT * FROM messages ORDER BY id ASC`).all();
+function getHistoryById(roomId) {
+  return messagesDB
+    .prepare(`SELECT * FROM messages WHERE room = ?`).all(roomId);
 }
 
 //users functions
@@ -147,4 +148,4 @@ function checkIfUserInRoom(username, roomId){
 }
 
 
-module.exports = { saveMessage, getHistory, saveUser, findUserByusername, findRoomById, saveRoom, newRoomUser, getRoomsByUser, findRoombyRoomId, getUsersByRoom, checkIfUserInRoom};
+module.exports = { saveMessage, getHistoryById, saveUser, findUserByusername, findRoomById, saveRoom, newRoomUser, getRoomsByUser, findRoombyRoomId, getUsersByRoom, checkIfUserInRoom};

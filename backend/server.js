@@ -10,7 +10,7 @@ const app = express();
 const server = http.createServer(app);
 const wss = new ws.Server({ server });
 
-const {saveMessage, getHistory, saveUser, findUserByusername, findRoomById, newRoomUser, getRoomsByUser, saveRoom, findRoombyRoomId, getUsersByRoom, checkIfUserInRoom} = require("./db");
+const {saveMessage, getHistoryById, saveUser, findUserByusername, findRoomById, newRoomUser, getRoomsByUser, saveRoom, findRoombyRoomId, getUsersByRoom, checkIfUserInRoom} = require("./db");
 const {login, verifyToken} = require("./auth");
 const { verify } = require("crypto");
 const { url } = require("inspector");
@@ -127,7 +127,6 @@ wss.on("connection", socket =>{
         }
 
         const type = parsedMsg.type;
-        console.log("type: "+type);
 
         //route functions
 
@@ -290,7 +289,32 @@ wss.on("connection", socket =>{
         }
 
         function newMessage(){
-            if(!parsedMsg.sender || !parsedMsg.content || !parsedMsg.room){
+            console.log("new message request received: ", parsedMsg);
+
+            const token = parsedMsg.token;
+            const addedChat = parsedMsg.roomName;
+
+            if (!token) {
+                return socket.send(JSON.stringify({
+                    type: "error",
+                    error: "No token provided"
+                }));
+            }
+
+            let tokenData;
+            try {
+                tokenData = verifyToken(token);
+            } catch (err) {
+                return socket.send(JSON.stringify({
+                    type: "error",
+                    error: "Invalid token"
+                }));
+            }
+
+
+
+
+            if(!parsedMsg.sender || !parsedMsg.content || !parsedMsg.roomId){
                 socket.send(JSON.stringify({
                     type:"error",
                     error:"Missing sender, content or room field"
@@ -299,25 +323,79 @@ wss.on("connection", socket =>{
             }
 
             const newMessage = {
-                id:newId,
                 sender:parsedMsg.sender,
                 content:parsedMsg.content,
                 timestamp:Date.now(),
-                type:parsedMsg.type,
-                room:parsedMsg.room
+                msgType:parsedMsg.msgType,
+                room:parsedMsg.roomId
             }
 
             saveMessage(newMessage);
             console.log(newMessage);
 
+            const messageToClients = {
+                type:"newMessage",
+                sender:parsedMsg.sender,
+                content:parsedMsg.content,
+                timestamp:Date.now(),
+                msgType:parsedMsg.msgType,
+                room:parsedMsg.roomId
+            }
+
             wss.clients.forEach(client => {
                 if (client.readyState === ws.OPEN) {
-                    client.send(JSON.stringify(newMessage));
+                    client.send(JSON.stringify(messageToClients));
                 }
             })
         }
 
-        //ROUTING 
+        function getMessages(){
+            const token = parsedMsg.token;
+            const addedChat = parsedMsg.roomName;
+
+            if (!token) {
+                return socket.send(JSON.stringify({
+                    type: "error",
+                    error: "No token provided"
+                }));
+            }
+
+            let tokenData;
+            try {
+                tokenData = verifyToken(token);
+            } catch (err) {
+                return socket.send(JSON.stringify({
+                    type: "error",
+                    error: "Invalid token"
+                }));
+            }
+
+            const roomId = parsedMsg.roomId;
+            const username = tokenData.decoded.username;
+
+            if(checkIfUserInRoom(username, roomId)){
+                let messages = getHistoryById(roomId);
+
+                const messageToClients = {
+                    type:"messageHistory",
+                    messages:messages,
+                    roomId: roomId
+                }
+
+                wss.clients.forEach(client => {
+                    if (client.readyState === ws.OPEN) {
+                        client.send(JSON.stringify(messageToClients));
+                    }
+                })
+            }else{
+                return socket.send(JSON.stringify({
+                    type: "error",
+                    error: "Unauthorized access to room messages"
+                }));
+            }
+        }
+
+        //------------------------------------------------------------------------------------------------          ROUTING 
 
         switch(type){
             case "newMessage":
@@ -335,6 +413,10 @@ wss.on("connection", socket =>{
             case "getRoomUsers":
                 console.log("get room users");
                 getRoomUsers();
+                break;
+            case "getMessages":
+                console.log("get messages")
+                getMessages();
                 break;
             default:
                 socket.send(JSON.stringify({ type:"error", error:"Unknown message type"}));

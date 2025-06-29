@@ -1,17 +1,20 @@
 let friendName = "Guest";
 const presence1 = document.getElementById("pre-indic");
 const selectionIndicator = document.getElementById("selectionIndicator");
-const input = document.getElementById("msg-input");
-const inputBtn = document.getElementById("input-btn");
 const usernameText = document.getElementsByClassName("isWriting-text");
-const msgContainer = document.getElementById("msg-container");
+const msgContainer = document.getElementById("messages");
 
 let isOnline = false;
 
-//localStorage
+//environment Variables
 
 let username;
 let localRooms = []
+
+let currentRoomId;
+let currentRoomName;
+let currentRoomStatus = "Loading...";
+
 
 
 //   MAIN WEBSOCKET LOGIC
@@ -60,6 +63,18 @@ if(localStorage.getItem("token")){
         switch(data.type){
             case "rooms":
                 data.rooms.forEach(room => {
+                    let renderRoomName 
+                    if(room.roomName==""){
+                        room.users.forEach(user => {
+                            if(user !== username){
+                                renderRoomName = user;
+                            }
+                        });
+                    } else{
+                        renderRoomName = room.roomName;
+                    } 
+
+                    room.roomName = renderRoomName;
                     localRooms.push(room);
                     addChatRoom(room);
                 });
@@ -68,8 +83,33 @@ if(localStorage.getItem("token")){
                 console.error("Error: ", data.error);
                 break;
             case "newRoom":
+                let renderRoomName 
+                if(data.room.roomName==""){
+                    data.room.users.forEach(user => {
+                        if(user !== username){
+                            renderRoomName = user;
+                        }
+                    });
+                } else{
+                    renderRoomName = data.room.roomName;
+                } 
+
+                data.room.roomName = renderRoomName;
                 localRooms.push(data.room);
                 addChatRoom(data.room);
+                break;
+            case "newMessage":
+                addMessage(data.message);
+                break;
+            case"messageHistory":
+                if (data.roomId !== currentRoomId) {
+                    console.warn("Received messages for different room. Ignored.");
+                    return;
+                }
+                data.messages.forEach(message => {
+                    addMessage(message);
+                });
+                break;
             default:
                 console.warn("Unknown message type: ", data.type);
         }
@@ -88,11 +128,6 @@ var currentFilter = true;
 presence1.value = isOnline ? "Online" : "Offline";
 presence1.style.color = isOnline ? "#40AA5C" : "#5d5f69";
 
-input.addEventListener("keydown", function (event){
-    if(event.key === "Enter"){
-        sendMsg();
-    }
-});
 
 inputBtn.addEventListener("click", function (event){
     if(input.value !== ""){
@@ -149,19 +184,24 @@ function switchFilter(){
     }
 }
 function sendMsg(){
-    // send a message
-    input.value = "";
-    alert("Sende message to chat partner");
+    const input = document.getElementById("msg-input");
+    const inputBtn = document.getElementById("input-btn");
+
+    if(socket && socket.readyState === WebSocket.OPEN){
+        socket.send(JSON.stringify({
+            type:"newMessage",
+            token: localStorage.getItem("token"),
+            content: input.value,
+            sender: username,
+            msgType: "text",
+            roomId: currentRoomId
+        }))
+    }
 }
 
 const messageContainer = document.querySelector('.message-container');
 messageContainer.scrollTop = messageContainer.scrollHeight;
 
-
-window.addEventListener("load", () => {
-    const msgContainer = document.querySelector('.messages');
-    msgContainer.scrollTop = msgContainer.scrollHeight;
-})
 
 function logout() {
     localStorage.removeItem("token");
@@ -170,6 +210,27 @@ function logout() {
 
 function updateContent(){
     document.getElementById("greeting").textContent = username;
+    document.getElementById("chatUserName").textContent = currentRoomName || "Loading...";
+    //document.getElementById("chatUserStatus").textContent = currentRoomStatus || "Loading...";
+}
+
+function addMessage(message){
+    const messageElement = document.createElement("div");
+
+    if(message.sender === username){
+        messageElement.className = "self-send-msg";
+        messageElement.innerHTML = `
+            <p>${message.content}</p>
+        `;
+    }else{
+        messageElement.className = "friend-send-msg";
+        messageElement.innerHTML = `
+            <p>${message.content}</p>
+        `;
+    }
+
+    msgContainer.appendChild(messageElement);
+    msgContainer.scrollTop = msgContainer.scrollHeight;
 }
 
 function addChatRoom(room){
@@ -178,23 +239,11 @@ function addChatRoom(room){
     chatCard.setAttribute("data-room-id", room.roomId);
     chatCard.onclick = () => openRoom(room.roomId);
 
-    let renderRoomName 
-    console.log(room.roomName);
-    if(room.roomName==""){
-        room.users.forEach(user => {
-            if(user !== username){
-                renderRoomName = user;
-            }
-        });
-    } else{
-        renderRoomName = room.roomName;
-    } 
-
     chatCard.innerHTML = `
         <div class="chat-name-card-content">
             <i class="fa fa-user"></i>
             <div class="chat-name-car-text">
-                <h4 class="chat-name">${renderRoomName}</h4>
+                <h4 class="chat-name">${room.roomName}</h4>
                 <p class="pre-indic">Online</p>  
             </div>
         </div>
@@ -213,3 +262,37 @@ function addChatRoom(room){
        roomsPlaceholder.style.display = "block"; 
     }
 }
+
+function openRoom(roomId) {
+    const room = localRooms.find(r => r.roomId === roomId);
+    if (!room) {
+        console.error("Room not found: ", roomId);
+        return;
+    }
+
+    currentRoomId = room.roomId;
+    currentRoomName = room.roomName || "Loading...";
+    currentRoomStatus = "Loading...";
+
+    updateContent();
+
+    // Clear previous messages
+    msgContainer.innerHTML = "";
+
+    // Fetch and display messages for the selected room
+    if (socket && socket.readyState === WebSocket.OPEN) {
+        socket.send(JSON.stringify({
+            type: "getMessages",
+            token: localStorage.getItem("token"),
+            roomId: currentRoomId
+        }));
+    }
+}
+
+document.getElementById("msg-input").addEventListener("keydown", function(e) {
+    alert("Key pressed");
+    if (e.key === "Enter") {
+        e.preventDefault(); // verhindert den Reload!
+        sendMsg();
+    }
+});
