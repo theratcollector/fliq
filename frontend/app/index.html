@@ -13,6 +13,22 @@
 </head>
 <body>  
     <div class="tools-menu"><a>Exit</a><a onclick="logout()">Logout</a><a>Options</a></div>
+    <div class="server-error-overlay" id="serverErrorOverlay">
+        <div class="server-error-popup">
+            <div class="server-error-header">
+                <div class="server-error-icon">✕</div>
+            </div>
+            <div class="server-error-body">
+                <h2 class="server-error-title">Sorry!</h2>
+                <p class="server-error-message">
+                    Fliq’s server isn’t responding like it should. We're investigating. Please refresh or try again soon.
+                </p>
+                <button class="server-error-button" onclick="location.reload()">Refresh</button>
+            </div>
+        </div>
+    </div>
+
+
     <div class="background">
         <div class="main-card">
             <div class="nav">

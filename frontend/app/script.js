@@ -5,6 +5,10 @@ const usernameText = document.getElementsByClassName("isWriting-text");
 const msgContainer = document.getElementById("messages");
 
 let isOnline = false;
+let manuallyClosed = false;
+let reconnectTimeout;
+let reconnectInterval = 3000;
+
 
 //environment Variables
 
@@ -47,17 +51,51 @@ async function checkLogin() {
 
 checkLogin();
 
-if(localStorage.getItem("token")){
-    socket = new WebSocket("ws://localhost:3000?token=" + localStorage.getItem("token"));
-    socket.addEventListener("open", () => {
-        console.log("sending rooms request")
-        socket.send(JSON.stringify({ type:"getRooms", token: localStorage.getItem("token") }));
-    });
+if (localStorage.getItem("token")) {
+    initSocket(); // neue Funktion, die alles übernimmt
+} else {
+    window.location.href = "../login";
+}
 
 
-    // -------------------------------------------------------------------------------------------------------------------   BACKEND MESSAGES TO FRONTEND ROUTING -------------------------------------------------------
+function initSocket() {
+    const token = localStorage.getItem("token");
+    if (!token) return;
 
-    socket.addEventListener("message", (event) => {
+    if (socket) {
+        socket.close(); // alte Verbindung schließen, um Duplikate zu vermeiden
+    }
+
+    socket = new WebSocket("ws://localhost:3000?token=" + token);
+
+    socket.onopen = () => {
+        console.log("✅ Connected to server");
+        hideConnectionLostBanner();
+        socket.send(JSON.stringify({ type: "getRooms", token }));
+    };
+
+    socket.onmessage = handleSocketMessage;
+
+    socket.onclose = () => {
+        console.warn("❌ WebSocket closed. Trying to reconnect...");
+        if (!manuallyClosed) {
+            showConnectionLostBanner();
+            reconnectTimeout = setTimeout(() => {
+                initSocket();
+            }, reconnectInterval);
+        }
+    };
+
+    socket.onerror = (err) => {
+        console.error("WebSocket error:", err);
+        socket.close(); // Triggert `onclose` → reconnect
+    };
+}
+
+
+    // -------------------------------------------------------------------------------------------------------------------   BACKEND MESSAGES TO FRONTEND ROUTING --------------------------------------------------  
+
+function handleSocketMessage(event){
         const data = JSON.parse(event.data);
         console.log("Received data: ", data);
         switch(data.type){
@@ -113,10 +151,7 @@ if(localStorage.getItem("token")){
             default:
                 console.warn("Unknown message type: ", data.type);
         }
-    });
-}else{
-    window.location.href="../login";
-}
+    }
 
 
 
@@ -199,10 +234,19 @@ function sendMsg(){
     }
 }
 
-
+function showConnectionLostBanner() {
+    const banner = document.getElementById("serverErrorOverlay");
+    banner.style.display = "flex";
+}
+function hideConnectionLostBanner() {
+    const banner = document.getElementById("serverErrorOverlay");
+    banner.style.display = "none";
+}
 
 
 function logout() {
+    manuallyClosed = true;
+    if (socket) socket.close();
     localStorage.removeItem("token");
     window.location.href = "/frontend";
 }
