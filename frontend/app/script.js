@@ -129,5 +129,5 @@ messageContainer.scrollTop = messageContainer.scrollHeight;
 
 function logout() {
     localStorage.removeItem("token");
-    window.location.href = "/";
+    window.location.href = "/frontend";
 }
