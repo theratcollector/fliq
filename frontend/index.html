@@ -5,111 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>fliq-chat app</title>
     <link rel="stylesheet" href="style.css">
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
-        <link href="https://use.fontawesome.com/releases/v6.6.0/css/all.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+    <link href="https://use.fontawesome.com/releases/v6.6.0/css/all.css" rel="stylesheet">
 </head>
-<body>  
-    <div class="tools-menu"><a>Exit</a><a onclick="logout()">Logout</a><a>Options</a></div>
-    <div class="background">
-        <div class="main-card">
-            <div class="nav">
-                <div class="header">
-                    <h1>Good evening,</h1>
-                    <span id="greeting"></span>
-                </div>
-                <div class="chat-overview-card">
-                    <div class="custom-search-bar">
-                        <input type="text"  id="search" placeholder="Search...">
-                        <i class="fa fa-magnifying-glass"></i>
-                    </div>
-                    <div class="search-filter-bar">
-                        <div class="labels">
-                            <p class="label" onclick="switchFilter()">All</p>
-                            <p class="label" onclick="switchFilter()">Spam</p>
-                        </div>
-                        <div id="selectionIndicator" class="selection-indicator"></div>
-                    </div>
-
-                    <!-- diese Karte muss eingefügt werden wenn ein chat hizugefügt wird -->
-
-                    <div class="chat-name-card">
-                        <div class="chat-name-card-content">
-                            <i class="fa fa-user"></i>
-                            <div class="chat-name-car-text">
-                                <h4 id="chat1-name"></h4>
-                                <p id="pre-indic">offline</p>  
-                            </div>
-                        </div>
-                        <i class="fa fa-chevron-right" id="openChatBtn" onclick="openRoom()"></i>
-                    </div>
-                    
-                    
-                    <div class="add-user-form" id="addUserForm" style="display: none;">
-                        <h4>Add new user</h4>
-                        <input type="text" id="newUsername" placeholder="Enter username...">
-                        <button onclick="submitNewUserChat()" type="button">Add</button>
-                    </div>
-                    
-
-                    <div class="add-user-btn" onclick="toggleAddUserForm()">
-                        <i class="fa fa-plus"></i>
-                        <p>Add User</p>
-                    </div>
-
-
-                </div>
-            </div>
-            <div class="chat-view">
-                <div class="chat-view-nav-bar">
-                    <div class="left-nav-bar">
-                        <i class="fa fa-user"></i>
-                        <div class="chat-bar-nav-name-online">
-                            <h3 id="chatUserName"></h3>
-                            <p>online</p>
-                        </div>
-                    </div>
-                    <div class="right-nav-bar">
-                        <i class="fa fa-ellipsis-vertical" onclick="openMenu()"></i>
-                    </div>
-                </div>
-                <div class="chat-view-divider"></div>
-                <div class="message-container">
-                    <div class="messages">
-                        <div class="self-send-msg">
-                            <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
-
-                        </div>
-                        <div class="friend-send-msg">
-                            <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
-
-                        </div>
-
-                        <div class="friend-send-msg">
-                            <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
-
-                        </div>
-                        <div class="placeholder-message"></div>
-                    </div>
-                </div>
-                <div class="message-bar">
-                    <div class="msg-bar-left">
-                        <i class="fa fa-paperclip"></i>
-                        <i class="fa fa-microphone"></i>
-                    </div>
-                    <div class="msg-bar-text">
-                        <input id="msg-input" type="text" placeholder="Write a message...">
-                    </div>
-                    <div class="msg-bar-right">
-                        <div id="input-btn" class="send-icon">
-                            <i class="fa fa-paper-plane"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+<body>
+<div class="background">
+    <div class="nav">
+        <img src="img/fliq-logo.png" alt="fliq-logo">
+        <h1>Get Started</h1>
     </div>
+    <div class="main-card">
+        <h1><span class="bold-text">fliq</span> - where chat happens <span class="bold-text">fast</span></h1>
+        <div class="message-container">
+            <div class="message-left">
+                <p>my secure password is: lhoiasdf49</p>
+            </div>
+            <div class="message-right">
+                <p>did you know fliq is private</p>
+            </div>
+            <h1 class="launch-btn">Launch <span class="bold-text">fliq</span></h1>
+        </div>
+        <h1>...and <span class="bold-text">secure</span></h1>
+    </div>
+</div>
 </body>
 <script src="script.js"></script>
 </html>
