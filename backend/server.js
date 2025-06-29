@@ -10,7 +10,7 @@ const app = express();
 const server = http.createServer(app);
 const wss = new ws.Server({ server });
 
-const {saveMessage, getHistory, saveUser, findUserByusername, findRoomById, newRoomUser} = require("./db");
+const {saveMessage, getHistory, saveUser, findUserByusername, findRoomById, newRoomUser, getRoomsByUser, saveRoom} = require("./db");
 const {login, verifyToken} = require("./auth");
 const { verify } = require("crypto");
 const { url } = require("inspector");
@@ -112,39 +112,14 @@ app.post("/login", async (req, res) => {
 })
 
 wss.on("connection", socket =>{
-    const parameters = url.parse(req.url, true);
-    const token = parameters.query.token;
-
-    let tokenData;
-    try {
-        tokenData = verifyToken(token);
-    }catch (err) {
-        return socket.send(JSON.stringify({
-            type: "error",
-            error: "Invalid token"
-        }));
-    }
-
-    const username = tokenData.decoded.username;
-    console.log(`New connection from ${username}`);
-
-    const rooms = getRoomsByUser(username);
-    if(!rooms || rooms.length === 0){
-        console.log(`No rooms found for user ${username}`);
-        socket.send(JSON.stringify({
-            type: "error",
-            error: "No rooms found for user"
-        }));
-        return;
-    }
-    socket.send(JSON.stringify({type: "rooms",rooms: rooms}));
-
+    console.log("New client connected");
     socket.on("message", async (msg) => {
         let parsedMsg
 
         try{
             parsedMsg = JSON.parse(msg);
         }catch{
+            console.log("error parsing message: ",msg.toString());
             return socket.send(JSON.stringify({
                 type:"error",
                 error:"Invalid JSON format"
@@ -152,20 +127,64 @@ wss.on("connection", socket =>{
         }
 
         const type = parsedMsg.type;
+        console.log("type: "+type);
 
         switch(type){
             case "newMessage":
+                console.log("send new message");
                 newMessage();
                 break;
             case "newRoom":
+                console.log("create new room");
                 newRoom();
+                break;
+            case "getRooms":
+                console.log("get rooms");
+                getRooms();
                 break;
             default:
                 socket.send(JSON.stringify({ type:"error", error:"Unknown message type"}));
         }
 
-        function newRoom(parsedMsg, socket, wss) {
-            const { token, addedChat } = parsedMsg;
+        function getRooms() {
+            if(parsedMsg.token){
+                const token = parsedMsg.token;
+                let tokenData;
+                try {
+                    tokenData = verifyToken(token);
+                }catch (err) {
+                    console.log("error verifying token: "+err.message);
+                    return socket.send(JSON.stringify({
+                        type: "error",
+                        error: "Invalid token"
+                    }));
+                }
+
+                const username = tokenData.decoded.username;
+                console.log(`New connection from ${username}`);
+
+                const rooms = getRoomsByUser(username);
+                console.log(`Rooms for user ${username}:`, rooms);    
+                if(!rooms || rooms.length === 0){
+                    console.log(`No rooms found for user ${username}`);
+                    socket.send(JSON.stringify({
+                        type: "rooms",
+                        rooms: ""
+                    }));
+                    return;
+                }
+                socket.send(JSON.stringify({type: "rooms",rooms: rooms}));
+            }else{
+                return socket.send(JSON.stringify({
+                    type: "error",
+                    error: "No auth provided"
+                }));
+            }
+        }
+
+        function newRoom() {
+            const token = parsedMsg.token;
+            const addedChat = parsedMsg.roomName;
 
             if (!token) {
                 return socket.send(JSON.stringify({
@@ -199,6 +218,7 @@ wss.on("connection", socket =>{
             };
 
             try {
+                console.log("DEBUG IMPORTANT: "+newRoom.roomId);
                 saveRoom(newRoom);
                 newRoomUser(username, newRoom.roomId);
                 newRoomUser(addedChat, newRoom.roomId); // ← Achtung: `addedChat` ist hier der andere Username?
@@ -262,7 +282,7 @@ server.listen(PORT, () => {
 
 
 function generateNewRoomId(){
-    let exsists = true
+    let exists = true
     let id;
 
     while(exists){
@@ -270,5 +290,6 @@ function generateNewRoomId(){
         exists = findRoomById(id);
     }
     console.log("generated unique roomid: "+id);
+    return id;
     
 }

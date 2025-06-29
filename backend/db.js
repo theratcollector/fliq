@@ -104,6 +104,7 @@ function saveRoom(room){
 }
 
 function newRoomUser(user, room){
+  console.log("Adding user to room: "+user+" in room: "+room);
   try{
     roomsDB.prepare(`
         INSERT INTO room_users  (roomId, username)
@@ -122,13 +123,12 @@ function getRoomsByUser(username) {
             SELECT roomId FROM room_users WHERE username = ?
         `).all(username);
 
-        // Gib die Liste der roomIds zurück
         return rows.map(row => row.roomId);
     } catch (err) {
         console.error("Error in DB:", err.message);
-        return []; // Gib leeres Array zurück bei Fehler
+        return [];
     }
 }
 
 
-module.exports = { saveMessage, getHistory, saveUser, findUserByusername, findRoomById, saveRoom, newRoomUser};
+module.exports = { saveMessage, getHistory, saveUser, findUserByusername, findRoomById, saveRoom, newRoomUser, getRoomsByUser};

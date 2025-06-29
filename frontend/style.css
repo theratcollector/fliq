@@ -3,6 +3,11 @@
     padding: 0;
 }
 
+html, body {
+  overflow: hidden;
+  height: 100%;
+}
+
 body{
     font-family: 'Inter', sans-serif;
 }
@@ -299,7 +304,7 @@ body{
     justify-self: flex-end;
     flex-shrink: 0;
     z-index: 10;
-    backdrop-filter: blur(15px);
+    backdrop-filter: blur(3px);
     bottom: 10px;
 }
 
@@ -313,7 +318,7 @@ body{
 
 .msg-bar-left i{
     font-size: 20px;
-    color: #848484;
+    color: rgba(0,0,0,0.4);
 }
 
 .msg-bar-text{
@@ -333,8 +338,8 @@ body{
 }
 
 input::placeholder{
-    color: rgba(0,0,0,0.32);
-    font-weight: 100;
+    color: rgba(0, 0, 0, 0.411);
+    font-weight: 500;
 }
 
 input:focus{
@@ -350,10 +355,19 @@ input:focus{
 
 .send-icon i{
     font-size: 16px;
-    background-image: linear-gradient(#B0697D, #626370);
+    /*background-image: linear-gradient(#B0697D, #626370);*/
     padding: 10px;
     border-radius: 20%;
-    color: #EDEDED;
+    color: rgba(0,0,0,0.4);
+}
+
+i{
+    transition: 0.3s ease-in-out;
+}
+
+i:hover{
+    cursor : pointer;
+    color: rgba(0,0,0,0.5);
 }
 
 .message-container{
@@ -478,5 +492,29 @@ input:focus{
     margin-bottom: 10px;
 }
 
+.tools-menu{
+    position:absolute;
+    left: 1%;
+    top: 1%;
+    height: 30px;
+    background-color: #FFFFFF32;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding:10px 30px 10px 30px;
+}
 
+.tools-menu a{
+    text-decoration: none;
+    transition: 0.2s ease-in-out;
+}
+
+.tools-menu a:hover{
+    cursor: pointer;
+    color: #000000;
+    transform: scale(1.05);
+}
 

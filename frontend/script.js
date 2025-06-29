@@ -14,6 +14,41 @@ document.getElementById("chatUserName").textContent = friendName;
 document.getElementById("chat1-name").textContent = friendName;
 
 
+//   MAIN WEBSOCKET LOGIC
+let socket;
+
+if(localStorage.getItem("token")){
+    socket = new WebSocket("ws://localhost:3000?token=" + localStorage.getItem("token"));
+    socket.addEventListener("open", () => {
+        console.log("sending rooms request")
+        socket.send(JSON.stringify({ type:"getRooms", token: localStorage.getItem("token") }));
+    });
+    
+    //hier einen websocket call starten
+
+    socket.addEventListener("message", (event) => {
+        const data = JSON.parse(event.data);
+        console.log("Received data: ", data);
+        switch(data.type){
+            case "rooms":
+                console.log("Rooms received: ", data.rooms);
+                // Handle rooms data
+                break;
+            case "error":
+                console.error("Error: ", data.error);
+                break;
+            default:
+                console.warn("Unknown message type: ", data.type);
+        }
+    });
+}else{
+    window.location.href="lander";
+}
+
+
+
+
+
 
 var currentFilter = true;
 
@@ -47,11 +82,17 @@ function toggleAddUserForm(){
     });
 }
 
-function submitNewUser() {
+function submitNewUserChat() {
     const username = document.getElementById("newUsername").value;
     if (!username) return;
 
-    
+    if(socket && socket.readyState === WebSocket.OPEN){
+        socket.send(JSON.stringify({
+            type: "newRoom",
+            token: localStorage.getItem("token"),
+            roomName: username
+        }));
+    }
 }
 
 
@@ -86,4 +127,7 @@ const messageContainer = document.querySelector('.message-container');
 messageContainer.scrollTop = messageContainer.scrollHeight;
 
 
-const socket = new WebSocket("ws://localhost:3000?token=" + localStorage.getItem("token"));
+function logout() {
+    localStorage.removeItem("token");
+    window.location.href = "lander";
+}
