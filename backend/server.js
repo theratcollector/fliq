@@ -154,10 +154,9 @@ wss.on("connection", socket =>{
                 
                 rooms.forEach(roomId => {
                     const room = findRoombyRoomId(roomId);
-
                     const users = getUsersByRoom(room.roomId);                
 
-                   if(room){
+                    if(room){
                         roomsArray.push({
                             roomId: room.roomId,
                             roomName: room.roomName,
@@ -183,7 +182,6 @@ wss.on("connection", socket =>{
                 socket.send(JSON.stringify({
                     type: "rooms",
                     rooms: roomsArray,
-                    users: users
                 }));
             }else{
                 return socket.send(JSON.stringify({
@@ -269,10 +267,11 @@ wss.on("connection", socket =>{
                 newRoomUser(username, newRoom.roomId);
                 newRoomUser(addedChat, newRoom.roomId);
 
+                newRoom.users = getUsersByRoom(newRoom.roomId);
+
                 const message = {
                     type: "newRoom",
                     room: newRoom,
-                    users: [username, addedChat]
                 };
 
                 wss.clients.forEach(client => {

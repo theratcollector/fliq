@@ -11,7 +11,7 @@ let isOnline = false;
 //localStorage
 
 let username;
-let rooms = []
+let localRooms = []
 
 
 //   MAIN WEBSOCKET LOGIC
@@ -50,30 +50,26 @@ if(localStorage.getItem("token")){
         console.log("sending rooms request")
         socket.send(JSON.stringify({ type:"getRooms", token: localStorage.getItem("token") }));
     });
-    
-    //hier einen websocket call starten
+
+
+    // -------------------------------------------------------------------------------------------------------------------   BACKEND MESSAGES TO FRONTEND ROUTING -------------------------------------------------------
 
     socket.addEventListener("message", (event) => {
         const data = JSON.parse(event.data);
         console.log("Received data: ", data);
         switch(data.type){
             case "rooms":
-                console.log("Rooms received: ", data.rooms);
-                // Handle rooms data
-                rooms.forEach(room => {
-                    rooms.push(room);
-                    if(room.roomName == ""){
-                        addChatRoom(room.roomName, room.status);
-                    } else {
-                        friendName = room.roomName;
-                        document.getElementById("chatUserName").textContent = friendName;
-                        document.getElementById("chat-name").textContent = friendName;
-                    }
+                data.rooms.forEach(room => {
+                    localRooms.push(room);
+                    addChatRoom(room);
                 });
                 break;
             case "error":
                 console.error("Error: ", data.error);
                 break;
+            case "newRoom":
+                localRooms.push(data.room);
+                addChatRoom(data.room);
             default:
                 console.warn("Unknown message type: ", data.type);
         }
@@ -174,21 +170,32 @@ function logout() {
 
 function updateContent(){
     document.getElementById("greeting").textContent = username;
-    document.getElementById("chatUserName").textContent = friendName;
-    document.getElementById("chat-name").textContent = friendName;
 }
 
-function addChatRoom(username, status = "offline"){
+function addChatRoom(room){
     const chatCard = document.createElement("div");
     chatCard.className = "chat-name-card";
-    chatCard.onclick = () => openRoom(chatroom.roomId);
+    chatCard.setAttribute("data-room-id", room.roomId);
+    chatCard.onclick = () => openRoom(room.roomId);
+
+    let renderRoomName 
+    console.log(room.roomName);
+    if(room.roomName==""){
+        room.users.forEach(user => {
+            if(user !== username){
+                renderRoomName = user;
+            }
+        });
+    } else{
+        renderRoomName = room.roomName;
+    } 
 
     chatCard.innerHTML = `
         <div class="chat-name-card-content">
             <i class="fa fa-user"></i>
             <div class="chat-name-car-text">
-                <h4 class="chat-name">${username}</h4>
-                <p class="pre-indic">${status}</p>  
+                <h4 class="chat-name">${renderRoomName}</h4>
+                <p class="pre-indic">Online</p>  
             </div>
         </div>
         <i class="fa fa-chevron-right openChatBtn"></i>
@@ -198,4 +205,11 @@ function addChatRoom(username, status = "offline"){
     const container = document.querySelector(".chat-overview-card");
 
     container.insertBefore(chatCard, insertBeforeElement);
+
+    const roomsPlaceholder = document.getElementById("chatCardPlaceholder");
+    if(localRooms.length > 0){
+        roomsPlaceholder.style.display = "none";
+    }else{
+       roomsPlaceholder.style.display = "block"; 
+    }
 }
