@@ -24,9 +24,9 @@ body{
     justify-content: space-evenly;
     align-items: stretch;
     background-color: #FFFFFF14;
-    width: 60vw;
+    width: 70vw;
     margin: auto;
-    height: 70vh;
+    height: 80vh;
     border-radius: 34px;
     border: 1px solid #DADADA;
     padding: 20px;
@@ -163,17 +163,27 @@ body{
 }
 
 .chat-name-card{
-    width: 90%;
+    width: 80%;
     height: 30px;
+    border-radius: 10px;
+    border: 1px solid #E8E8E8;
+
     display: flex;
     background-color: transparent;
     justify-content: space-between;
-    border-radius: 10px;
-    border: 1px solid #E8E8E8;
     align-items: center;
+
     margin-bottom: 10px;
-    padding-top: 4px;
-    padding-bottom: 4px;
+    padding: 10px;
+
+    cursor: pointer;
+    transition: 0.3s ease-in-out;
+}
+
+.chat-name-card:hover{
+    background-color: rgba(255, 255, 255, 0.151);
+    border: 1px solid #DADADA;
+    transform: rotate(0.4deg)scale(1.02);
 }
 
 .chat-name-card-content{
@@ -189,6 +199,8 @@ body{
     flex-direction: column;
     align-items: center;
 }
+
+
 
 .chat-name-card i{
     background-color: #F6F6F6;
@@ -235,6 +247,10 @@ body{
     font-weight: 400;
 }
 
+.chat-name{
+    color: #000000e0;
+    font-weight: 600;
+}
 
 
 .chat-view-nav-bar{
@@ -361,13 +377,14 @@ input:focus{
     color: rgba(0,0,0,0.4);
 }
 
-i{
+.message-bar i{
     transition: 0.3s ease-in-out;
 }
 
-i:hover{
+.message-bar i:hover{
     cursor : pointer;
     color: rgba(0,0,0,0.5);
+    transform: rotate(0.1deg)scale(1.05);
 }
 
 .message-container{
@@ -516,5 +533,10 @@ i:hover{
     cursor: pointer;
     color: #000000;
     transform: scale(1.05);
+}
+
+.chat-card-placeholder{
+    width: 80%;
+    margin-top: 10px;
 }
 

@@ -129,25 +129,68 @@ wss.on("connection", socket =>{
         const type = parsedMsg.type;
         console.log("type: "+type);
 
-        switch(type){
-            case "newMessage":
-                console.log("send new message");
-                newMessage();
-                break;
-            case "newRoom":
-                console.log("create new room");
-                newRoom();
-                break;
-            case "getRooms":
-                console.log("get rooms");
-                getRooms();
-                break;
-            case "getRoomUsers":
-                console.log("get room users");
-                getRoomUsers();
-                break;
-            default:
-                socket.send(JSON.stringify({ type:"error", error:"Unknown message type"}));
+        //route functions
+
+        function getRooms() {
+            console.log("get rooms request received");
+            if(parsedMsg.token){
+                const token = parsedMsg.token;
+                let tokenData;
+                try {
+                    tokenData = verifyToken(token);
+                }catch (err) {
+                    console.log("error verifying token: "+err.message);
+                    return socket.send(JSON.stringify({
+                        type: "error",
+                        error: "Invalid token"
+                    }));
+                }
+
+                const username = tokenData.decoded.username;
+                console.log(`New connection from ${username}`);
+
+                const rooms = getRoomsByUser(username);
+                let roomsArray = [];
+                
+                rooms.forEach(roomId => {
+                    const room = findRoombyRoomId(roomId);
+
+                    const users = getUsersByRoom(room.roomId);                
+
+                   if(room){
+                        roomsArray.push({
+                            roomId: room.roomId,
+                            roomName: room.roomName,
+                            createdAt: room.createdAt,
+                            users: users
+                        });
+                    }else{
+                        console.log(`Room with ID ${roomId} not found for user ${username}`);
+                    }
+                })
+                
+                /*
+                if(!rooms || rooms.length === 0){
+                    console.log(`No rooms found for user ${username}`);
+                    socket.send(JSON.stringify({
+                        type: "rooms",
+                        rooms: "",
+                        users: []
+                    }));
+                    return;
+                }
+                */
+                socket.send(JSON.stringify({
+                    type: "rooms",
+                    rooms: roomsArray,
+                    users: users
+                }));
+            }else{
+                return socket.send(JSON.stringify({
+                    type: "error",
+                    error: "No auth provided"
+                }));
+            }
         }
 
         function getRoomUsers(){
@@ -182,57 +225,8 @@ wss.on("connection", socket =>{
                         }));
                     }
                 }
-        }
-
-        function getRooms() {
-            if(parsedMsg.token){
-                const token = parsedMsg.token;
-                let tokenData;
-                try {
-                    tokenData = verifyToken(token);
-                }catch (err) {
-                    console.log("error verifying token: "+err.message);
-                    return socket.send(JSON.stringify({
-                        type: "error",
-                        error: "Invalid token"
-                    }));
-                }
-
-                const username = tokenData.decoded.username;
-                console.log(`New connection from ${username}`);
-
-                const rooms = getRoomsByUser(username);
-                let roomsArray = [];
-                
-                rooms.forEach(roomId => {
-                    const room = findRoombyRoomId(roomId);
-                    if(room){
-                        roomsArray.push({
-                            roomId: room.roomId,
-                            roomName: room.roomName,
-                            createdAt: room.createdAt
-                        });
-                    }else{
-                        console.log(`Room with ID ${id} not found for user ${username}`);
-                    }
-                })
-                
-                if(!rooms || rooms.length === 0){
-                    console.log(`No rooms found for user ${username}`);
-                    socket.send(JSON.stringify({
-                        type: "rooms",
-                        rooms: ""
-                    }));
-                    return;
-                }
-                socket.send(JSON.stringify({type: "rooms",rooms: roomsArray}));
-            }else{
-                return socket.send(JSON.stringify({
-                    type: "error",
-                    error: "No auth provided"
-                }));
             }
-        }
+        };
 
         function newRoom() {
             const token = parsedMsg.token;
@@ -265,7 +259,7 @@ wss.on("connection", socket =>{
 
             const newRoom = {
                 roomId: generateNewRoomId(),
-                roomName: addedChat,
+                roomName: "",
                 createdAt: Date.now()
             };
 
@@ -323,7 +317,30 @@ wss.on("connection", socket =>{
                 }
             })
         }
-    }})
+
+        //ROUTING 
+
+        switch(type){
+            case "newMessage":
+                console.log("send new message");
+                newMessage();
+                break;
+            case "newRoom":
+                console.log("create new room");
+                newRoom();
+                break;
+            case "getRooms":
+                console.log("get rooms");
+                getRooms();
+                break;
+            case "getRoomUsers":
+                console.log("get room users");
+                getRoomUsers();
+                break;
+            default:
+                socket.send(JSON.stringify({ type:"error", error:"Unknown message type"}));
+        }
+    });
 })
 
 const PORT = 3000;

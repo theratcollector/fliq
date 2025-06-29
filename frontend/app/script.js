@@ -1,4 +1,3 @@
-let username;
 let friendName = "Guest";
 const presence1 = document.getElementById("pre-indic");
 const selectionIndicator = document.getElementById("selectionIndicator");
@@ -9,6 +8,10 @@ const msgContainer = document.getElementById("msg-container");
 
 let isOnline = false;
 
+//localStorage
+
+let username;
+let rooms = []
 
 
 //   MAIN WEBSOCKET LOGIC
@@ -57,6 +60,16 @@ if(localStorage.getItem("token")){
             case "rooms":
                 console.log("Rooms received: ", data.rooms);
                 // Handle rooms data
+                rooms.forEach(room => {
+                    rooms.push(room);
+                    if(room.roomName == ""){
+                        addChatRoom(room.roomName, room.status);
+                    } else {
+                        friendName = room.roomName;
+                        document.getElementById("chatUserName").textContent = friendName;
+                        document.getElementById("chat-name").textContent = friendName;
+                    }
+                });
                 break;
             case "error":
                 console.error("Error: ", data.error);
@@ -77,7 +90,7 @@ if(localStorage.getItem("token")){
 var currentFilter = true;
 
 presence1.value = isOnline ? "Online" : "Offline";
-presence1.style.color = isOnline ? "#40AA5C" : "#ACAFC0";
+presence1.style.color = isOnline ? "#40AA5C" : "#5d5f69";
 
 input.addEventListener("keydown", function (event){
     if(event.key === "Enter"){
@@ -149,6 +162,11 @@ const messageContainer = document.querySelector('.message-container');
 messageContainer.scrollTop = messageContainer.scrollHeight;
 
 
+window.addEventListener("load", () => {
+    const msgContainer = document.querySelector('.messages');
+    msgContainer.scrollTop = msgContainer.scrollHeight;
+})
+
 function logout() {
     localStorage.removeItem("token");
     window.location.href = "/frontend";
@@ -157,5 +175,27 @@ function logout() {
 function updateContent(){
     document.getElementById("greeting").textContent = username;
     document.getElementById("chatUserName").textContent = friendName;
-    document.getElementById("chat1-name").textContent = friendName;
+    document.getElementById("chat-name").textContent = friendName;
+}
+
+function addChatRoom(username, status = "offline"){
+    const chatCard = document.createElement("div");
+    chatCard.className = "chat-name-card";
+    chatCard.onclick = () => openRoom(chatroom.roomId);
+
+    chatCard.innerHTML = `
+        <div class="chat-name-card-content">
+            <i class="fa fa-user"></i>
+            <div class="chat-name-car-text">
+                <h4 class="chat-name">${username}</h4>
+                <p class="pre-indic">${status}</p>  
+            </div>
+        </div>
+        <i class="fa fa-chevron-right openChatBtn"></i>
+    `;
+
+    const insertBeforeElement = document.getElementById("addUserForm");
+    const container = document.querySelector(".chat-overview-card");
+
+    container.insertBefore(chatCard, insertBeforeElement);
 }
