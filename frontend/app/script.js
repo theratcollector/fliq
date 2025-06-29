@@ -42,7 +42,7 @@ if(localStorage.getItem("token")){
         }
     });
 }else{
-    window.location.href="/";
+    window.location.href="../login";
 }
 
 

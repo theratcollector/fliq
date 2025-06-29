@@ -9,16 +9,15 @@ function home(){
     const statusMsg = document.getElementById("statusMsg");
 
     const params = new URLSearchParams(window.location.search);
-    const status = params.get("status");
+    const loginStatus = params.get("status");
 
-    if(status === "success"){
-        tokenField.style.display = "block";
+
+    if(loginStatus === "success"){
         statusMsg.style.display = "block";
-        statusMsg.inerHTML = "Successfully logged in."
-    }else if(status === "error"){
-        tokenField.style.display = "block";
+        statusMsg.innerHTML = "Successfully logged in."
+    }else if(loginStatus === "error"){
         statusMsg.style.display = "block";
-        statusMsg.inerHTML = "An error occured."
+        statusMsg.innerHTML = "An error occured."
     }
 
     async function login(){
