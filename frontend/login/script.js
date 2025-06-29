@@ -44,7 +44,7 @@ function home(){
 
             if(result.token){
                 localStorage.setItem("token", result.token);
-                window.location.href = "../index.html";
+                window.location.href = "../app";
             }
         }catch (err){
             console.log("Error: "+err.message);

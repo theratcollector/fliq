@@ -1,5 +1,5 @@
-const username = "Oskar";
-const friendName = "Daniel";
+let username;
+let friendName = "Guest";
 const presence1 = document.getElementById("pre-indic");
 const selectionIndicator = document.getElementById("selectionIndicator");
 const input = document.getElementById("msg-input");
@@ -7,15 +7,39 @@ const inputBtn = document.getElementById("input-btn");
 const usernameText = document.getElementsByClassName("isWriting-text");
 const msgContainer = document.getElementById("msg-container");
 
-var isOnline = false;
+let isOnline = false;
 
-document.getElementById("greeting").textContent = username;
-document.getElementById("chatUserName").textContent = friendName;
-document.getElementById("chat1-name").textContent = friendName;
 
 
 //   MAIN WEBSOCKET LOGIC
 let socket;
+
+async function checkLogin() {
+    const token = localStorage.getItem("token");
+
+    if (token) {
+        const res = await fetch("http://localhost:3000/checkLogin", {
+            method: "POST",
+            headers: {
+                Authorization: "Bearer " + token
+            }
+        });
+
+        const data = await res.json();
+
+
+        if (!data.valid) {
+            window.location.href = "../";
+            return;
+        }
+
+        username = data.username;
+        updateContent();
+        
+    }
+}
+
+checkLogin();
 
 if(localStorage.getItem("token")){
     socket = new WebSocket("ws://localhost:3000?token=" + localStorage.getItem("token"));
@@ -55,8 +79,6 @@ var currentFilter = true;
 presence1.value = isOnline ? "Online" : "Offline";
 presence1.style.color = isOnline ? "#40AA5C" : "#ACAFC0";
 
-usernameText.value = username;
-
 input.addEventListener("keydown", function (event){
     if(event.key === "Enter"){
         sendMsg();
@@ -83,14 +105,14 @@ function toggleAddUserForm(){
 }
 
 function submitNewUserChat() {
-    const username = document.getElementById("newUsername").value;
-    if (!username) return;
+    const newUsername = document.getElementById("newUsername").value;
+    if (!newUsername) return;
 
     if(socket && socket.readyState === WebSocket.OPEN){
         socket.send(JSON.stringify({
             type: "newRoom",
             token: localStorage.getItem("token"),
-            roomName: username
+            roomName: newUsername
         }));
     }
 }
@@ -130,4 +152,10 @@ messageContainer.scrollTop = messageContainer.scrollHeight;
 function logout() {
     localStorage.removeItem("token");
     window.location.href = "/frontend";
+}
+
+function updateContent(){
+    document.getElementById("greeting").textContent = username;
+    document.getElementById("chatUserName").textContent = friendName;
+    document.getElementById("chat1-name").textContent = friendName;
 }
