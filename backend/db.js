@@ -36,7 +36,7 @@ usersDB.prepare(`
       CREATE TABLE IF NOT EXISTS rooms(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         roomId TEXT NOT NULL,
-        roomName TEXT NOT NULL,
+        roomName TEXT,
         createdAt INTEGER NOT NULL
       );
     `).run();
@@ -130,5 +130,21 @@ function getRoomsByUser(username) {
     }
 }
 
+function findRoombyRoomId(roomId) {
+    return roomsDB.prepare(`SELECT * FROM rooms WHERE roomId = ?`).get(roomId)
+  };
 
-module.exports = { saveMessage, getHistory, saveUser, findUserByusername, findRoomById, saveRoom, newRoomUser, getRoomsByUser};
+function getUsersByRoom(roomId) {
+  return roomsDB.prepare(`
+      SELECT username FROM room_users WHERE roomId = ?
+  `).all(roomId).map(row => row.username);
+}
+
+function checkIfUserInRoom(username, roomId){
+  const result = roomsDB.prepare(`
+    SELECT * FROM room_users WHERE username = ? AND roomId = ?`).get(username, roomId);
+  return result ? true : false;
+}
+
+
+module.exports = { saveMessage, getHistory, saveUser, findUserByusername, findRoomById, saveRoom, newRoomUser, getRoomsByUser, findRoombyRoomId, getUsersByRoom, checkIfUserInRoom};

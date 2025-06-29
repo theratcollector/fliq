@@ -10,7 +10,7 @@ const app = express();
 const server = http.createServer(app);
 const wss = new ws.Server({ server });
 
-const {saveMessage, getHistory, saveUser, findUserByusername, findRoomById, newRoomUser, getRoomsByUser, saveRoom} = require("./db");
+const {saveMessage, getHistory, saveUser, findUserByusername, findRoomById, newRoomUser, getRoomsByUser, saveRoom, findRoombyRoomId, getUsersByRoom, checkIfUserInRoom} = require("./db");
 const {login, verifyToken} = require("./auth");
 const { verify } = require("crypto");
 const { url } = require("inspector");
@@ -142,8 +142,46 @@ wss.on("connection", socket =>{
                 console.log("get rooms");
                 getRooms();
                 break;
+            case "getRoomUsers":
+                console.log("get room users");
+                getRoomUsers();
+                break;
             default:
                 socket.send(JSON.stringify({ type:"error", error:"Unknown message type"}));
+        }
+
+        function getRoomUsers(){
+            if(parsedMsg.token){
+                const token = parsedMsg.token;
+                let tokenData;
+
+                try{
+                    tokenData = verifyToken(token);
+                }catch (err) {
+                    console.log("error verifying token: "+err.message);
+                    return socket.send(JSON.stringify({
+                        type: "error",
+                        error: "Invalid token"
+                    }));
+                }
+
+                const roomId = parsedMsg.roomId;
+                const username = tokenData.decoded.username;
+
+                console.log("get room users request from "+username+" for room "+roomId);
+
+                if(checkIfUserInRoom(username, roomId)){
+                    const users = getUsersByRoom(roomId);
+
+                    if(users){
+                        console.log(`Users in room ${roomId}: `, users);
+                        socket.send(JSON.stringify({
+                            type: "roomUsers",
+                            roomId: roomId,
+                            users: users
+                        }));
+                    }
+                }
         }
 
         function getRooms() {
@@ -164,7 +202,21 @@ wss.on("connection", socket =>{
                 console.log(`New connection from ${username}`);
 
                 const rooms = getRoomsByUser(username);
-                console.log(`Rooms for user ${username}:`, rooms);    
+                let roomsArray = [];
+                
+                rooms.forEach(roomId => {
+                    const room = findRoombyRoomId(roomId);
+                    if(room){
+                        roomsArray.push({
+                            roomId: room.roomId,
+                            roomName: room.roomName,
+                            createdAt: room.createdAt
+                        });
+                    }else{
+                        console.log(`Room with ID ${id} not found for user ${username}`);
+                    }
+                })
+                
                 if(!rooms || rooms.length === 0){
                     console.log(`No rooms found for user ${username}`);
                     socket.send(JSON.stringify({
@@ -173,7 +225,7 @@ wss.on("connection", socket =>{
                     }));
                     return;
                 }
-                socket.send(JSON.stringify({type: "rooms",rooms: rooms}));
+                socket.send(JSON.stringify({type: "rooms",rooms: roomsArray}));
             }else{
                 return socket.send(JSON.stringify({
                     type: "error",
@@ -221,9 +273,8 @@ wss.on("connection", socket =>{
                 console.log("DEBUG IMPORTANT: "+newRoom.roomId);
                 saveRoom(newRoom);
                 newRoomUser(username, newRoom.roomId);
-                newRoomUser(addedChat, newRoom.roomId); // ← Achtung: `addedChat` ist hier der andere Username?
+                newRoomUser(addedChat, newRoom.roomId);
 
-                // Broadcast an alle Clients
                 const message = {
                     type: "newRoom",
                     room: newRoom,
@@ -272,7 +323,7 @@ wss.on("connection", socket =>{
                 }
             })
         }
-    })
+    }})
 })
 
 const PORT = 3000;

@@ -1,0 +1,20 @@
+### REST ###
+
+    /register  -> 
+
+    /login  ->
+
+    /checkLogin
+
+    /createChat
+    
+
+### WEBSOCKET ###
+
+    type:newMessage
+
+    type:newRoom
+
+    type:getRooms
+
+    type:getRoomUsers
