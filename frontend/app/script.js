@@ -42,7 +42,7 @@ if(localStorage.getItem("token")){
         }
     });
 }else{
-    window.location.href="lander";
+    window.location.href="/";
 }
 
 
@@ -129,5 +129,5 @@ messageContainer.scrollTop = messageContainer.scrollHeight;
 
 function logout() {
     localStorage.removeItem("token");
-    window.location.href = "lander";
+    window.location.href = "/";
 }
