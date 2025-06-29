@@ -154,8 +154,7 @@ function sendMsg(){
     alert("Sende message to chat partner");
 }
 
-const messageContainer = document.querySelector('.message-container');
-messageContainer.scrollTop = messageContainer.scrollHeight;
+
 
 
 window.addEventListener("load", () => {
