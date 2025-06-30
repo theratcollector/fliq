@@ -314,7 +314,7 @@ wss.on("connection", socket =>{
 
 
 
-            if(!parsedMsg.sender || !parsedMsg.content || !parsedMsg.roomId){
+            if(!tokenData.decoded.username || !parsedMsg.content || !parsedMsg.roomId){
                 socket.send(JSON.stringify({
                     type:"error",
                     error:"Missing sender, content or room field"
@@ -323,7 +323,7 @@ wss.on("connection", socket =>{
             }
 
             const newMessage = {
-                sender:parsedMsg.sender,
+                sender:tokenData.decoded.username,
                 content:parsedMsg.content,
                 timestamp:Date.now(),
                 msgType:parsedMsg.msgType,
@@ -335,7 +335,7 @@ wss.on("connection", socket =>{
 
             const messageToClients = {
                 type:"newMessage",
-                sender:parsedMsg.sender,
+                sender:tokenData.decoded.sender,
                 content:parsedMsg.content,
                 timestamp:Date.now(),
                 msgType:parsedMsg.msgType,
