@@ -53,11 +53,23 @@ usersDB.prepare(`
 //messages functions
 
 function saveMessage(msg){
-    messagesDB.prepare(`
-    INSERT INTO messages (sender, content, timestamp, type, room)
-    VALUES (?, ?, ?, ?, ?)
-  `).run(msg.sender, msg.content, msg.timestamp, msg.msgType, msg.room);
+    const stmt = messagesDB.prepare(`
+        INSERT INTO messages (sender, content, timestamp, type, room)
+        VALUES (?, ?, ?, ?, ?)
+    `);
+    const result = stmt.run(msg.sender, msg.content, msg.timestamp, msg.msgType, msg.roomId);
+
+    // Gib die Nachricht mit der generierten ID zurück
+    return {
+        id: result.lastInsertRowid,
+        sender: msg.sender,
+        content: msg.content,
+        timestamp: msg.timestamp,
+        msgType: msg.msgType,
+        roomId: msg.roomId
+    };
 }
+
 
 function getHistoryById(roomId) {
   return messagesDB

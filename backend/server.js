@@ -323,30 +323,26 @@ wss.on("connection", socket =>{
             }
 
             const newMessage = {
-                sender:tokenData.decoded.username,
-                content:parsedMsg.content,
-                timestamp:Date.now(),
-                msgType:parsedMsg.msgType,
-                room:parsedMsg.roomId
-            }
+                sender: tokenData.decoded.username,
+                content: parsedMsg.content,
+                timestamp: Date.now(),
+                msgType: parsedMsg.msgType,
+                roomId: parsedMsg.roomId
+            };
 
-            saveMessage(newMessage);
-            console.log(newMessage);
+
+            const savedMessage = saveMessage(newMessage);
 
             const messageToClients = {
-                type:"newMessage",
-                sender:tokenData.decoded.sender,
-                content:parsedMsg.content,
-                timestamp:Date.now(),
-                msgType:parsedMsg.msgType,
-                room:parsedMsg.roomId
-            }
+                type: "newMessage",
+                message: savedMessage
+            };
 
             wss.clients.forEach(client => {
                 if (client.readyState === ws.OPEN) {
                     client.send(JSON.stringify(messageToClients));
                 }
-            })
+            });
         }
 
         function getMessages(){

@@ -113,10 +113,7 @@ function handleSocketMessage(event){
         console.log("Received data: ", data);
         switch(data.type){
             case "rooms":
-                document.querySelectorAll(".chat-name-card").forEach(card => {
-                    card.remove(); 
-                });
-
+                state.rooms = [];
                 data.rooms.forEach(room => {
                     let renderRoomName 
                     if(room.roomName==""){
@@ -130,6 +127,7 @@ function handleSocketMessage(event){
                     } 
 
                     room.roomName = renderRoomName;
+
                     state.rooms.push(room);
                     renderRooms();
                 });
@@ -154,12 +152,13 @@ function handleSocketMessage(event){
                 addChatRoom(data.room);
                 break;
             case "newMessage":
-                if (data.message.roomId !== state.currentRoomId) {
-                    return;
-                }
-                if(!state.messages[roomId]) state.messages[roomId] = [];
+                const roomId = data.message.roomId;
+                if (roomId !== state.currentRoomId) return;
+
+                if (!state.messages[roomId]) state.messages[roomId] = [];
                 state.messages[roomId].push(data.message);
-                renderMessages();
+
+                addMessageToRoom(roomId, data.message);
                 break;
             case"messageHistory":
             console.log("Message history:"+ data.messages);
@@ -258,13 +257,13 @@ function switchFilter(){
 function sendMsg(){
     if(socket && socket.readyState === WebSocket.OPEN){
         socket.send(JSON.stringify({
-            type:"newMessage",
+            type: "newMessage",
             token: localStorage.getItem("token"),
             content: input.value,
-            sender: state.username,
             msgType: "text",
             roomId: state.currentRoomId
-        }))
+        }));
+
         input.value = "";
     }
 }
@@ -346,20 +345,21 @@ function renderRooms(){
 }
 
 function addMessageToRoom(roomId, message) {
-    if (!message || !message.sender || !message.id) return;
+    console.log("Adding message to room:", roomId, message);
+    const placeholder = document.querySelector(".placeholder-message");
+    placeholder.remove();
 
-    // Falls Nachrichtenliste fehlt: anlegen
+    if (!message || !message.sender || !roomId || !message.content) return;
+
     if (!state.messages[roomId]) {
         state.messages[roomId] = [];
     }
 
-    // Duplikate vermeiden (z. B. nach reconnect)
     const alreadyExists = state.messages[roomId].some(msg => msg.id === message.id);
-    if (alreadyExists) return;
+    //if (alreadyExists) return;
 
     state.messages[roomId].push(message);
 
-    // Nur rendern, wenn Raum gerade geöffnet ist
     if (roomId === state.currentRoomId) {
         const messageElement = document.createElement("div");
         messageElement.className = message.sender === state.username ? "self-send-msg" : "friend-send-msg";
@@ -367,7 +367,15 @@ function addMessageToRoom(roomId, message) {
         msgContainer.appendChild(messageElement);
         msgContainer.scrollTop = msgContainer.scrollHeight;
     }
+
+    const spaceHolder = document.createElement("div");
+    spaceHolder.className = "placeholder-message";
+    msgContainer.appendChild(spaceHolder);
+
+    msgContainer.scrollTop = msgContainer.scrollHeight;
+
 }
+
 
 
 /*
