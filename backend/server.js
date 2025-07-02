@@ -10,15 +10,32 @@ const app = express();
 const server = http.createServer(app);
 const wss = new ws.Server({ server });
 
-const {saveMessage, getHistoryById, saveUser, findUserByusername, findRoomById, newRoomUser, getRoomsByUser, saveRoom, findRoombyRoomId, getUsersByRoom, checkIfUserInRoom} = require("./db");
+const {saveMessage, getHistoryById, saveUser, findUserByusername, findRoomById, newRoomUser, getRoomsByUser, saveRoom, findRoombyRoomId, getUsersByRoom, checkIfUserInRoom, deleteAccount} = require("./db");
 const {login, verifyToken} = require("./auth");
 const { verify } = require("crypto");
 const { url } = require("inspector");
+const { type } = require("os");
 
 app.use(express.json());
 app.use(cors());
 
 const users = [];
+
+app.post("/deleteAccount", async (req, res) => {
+    const username = req.body.username;
+
+    console.log("received Delete request for user: ",username)
+
+    if(!username){return res.status(400).send("missing username");}
+
+    const success = deleteAccount(username);
+
+    if(success){
+        res.status(200).send("success");
+    }else{
+        res.status(400).send("failed");
+    }
+})
 
 app.post("/register", async (req, res) =>{
     console.log("received request");

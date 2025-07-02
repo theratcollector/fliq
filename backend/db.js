@@ -159,5 +159,48 @@ function checkIfUserInRoom(username, roomId){
   return result ? true : false;
 }
 
+function deleteAccount(username) {
+    const deletedName = "[deleted]";
 
-module.exports = { saveMessage, getHistoryById, saveUser, findUserByusername, findRoomById, saveRoom, newRoomUser, getRoomsByUser, findRoombyRoomId, getUsersByRoom, checkIfUserInRoom};
+    try {
+        // 1. Nachrichten anonymisieren
+        messagesDB.prepare(`
+            UPDATE messages SET sender = ? WHERE sender = ?
+        `).run(deletedName, username);
+
+        // 2. Raumnamen anpassen, falls es 1:1-Chats waren (roomName war der Username)
+        const oneToOneRooms = roomsDB.prepare(`
+            SELECT r.roomId, r.roomName
+            FROM rooms r
+            JOIN room_users ru ON r.roomId = ru.roomId
+            WHERE r.roomName = ?
+        `).all(username);
+
+        oneToOneRooms.forEach(room => {
+            roomsDB.prepare(`
+                UPDATE rooms SET roomName = ? WHERE roomId = ?
+            `).run(deletedName, room.roomId);
+        });
+
+        // 3. Beziehungen zu Räumen entfernen
+        roomsDB.prepare(`
+            DELETE FROM room_users WHERE username = ?
+        `).run(username);
+
+        // 4. User löschen
+        usersDB.prepare(`
+            DELETE FROM users WHERE username = ?
+        `).run(username);
+
+        console.log(`✅ Account '${username}' gelöscht.`);
+        return true;
+    } catch (err) {
+        console.error(`❌ Fehler beim Löschen von '${username}':`, err.message);
+        return false;
+    }
+}
+
+
+
+
+module.exports = { saveMessage, getHistoryById, saveUser, findUserByusername, findRoomById, saveRoom, newRoomUser, getRoomsByUser, findRoombyRoomId, getUsersByRoom, checkIfUserInRoom, deleteAccount};
