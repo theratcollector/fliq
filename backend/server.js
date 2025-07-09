@@ -5,6 +5,8 @@ const http = require("http");
 const bcrypt = require("bcrypt");
 const cors = require("cors");
 const crypto = require("crypto");
+const path = require("path");
+
 
 const app = express();
 const server = http.createServer(app);
@@ -17,7 +19,8 @@ const { url } = require("inspector");
 const { type } = require("os");
 
 app.use(express.json());
-app.use(cors());
+app.use(express.static(path.join(__dirname, "../frontend")));
+
 
 const users = [];
 

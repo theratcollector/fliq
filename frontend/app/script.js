@@ -71,7 +71,9 @@ function initSocket() {
         socket.close(); // alte Verbindung schließen, um Duplikate zu vermeiden
     }
 
-    socket = new WebSocket("ws://localhost:3000?token=" + token);
+    const protocol = window.location.protocol === "https:" ? "wss" : "ws";
+    socket = new WebSocket(`${protocol}://${window.location.host}/?token=${token}`);
+
 
     socket.onopen = () => {
         console.log("✅ Connected to server");
@@ -282,7 +284,7 @@ function logout() {
     manuallyClosed = true;
     if (socket) socket.close();
     localStorage.removeItem("token");
-    window.location.href = "/frontend";
+    window.location.href = "../";
 }
 
 function updateContent(){
